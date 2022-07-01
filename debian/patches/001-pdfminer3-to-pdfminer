@@ -1,0 +1,51 @@
+Description: Use pdfminer instead of pdfminer3.
+ It seems that pdfminer3 is an old fork of pdfminer for Python 3.
+ However, pdfminer now seems to be available for Python 3, and it
+ is packaged for Debian, too.
+ .
+ moin (2.0-1) unstable; urgency=medium
+ .
+   * Initial release.
+Author: Paul Boddie <paul@boddie.org.uk>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2022-07-03
+
+--- moin-2.0.orig/src/moin/converters/pdf_in.py
++++ moin-2.0/src/moin/converters/pdf_in.py
+@@ -9,10 +9,10 @@ import io
+ from datetime import datetime, timedelta
+ import logging as stdlogging
+ 
+-from pdfminer3.pdfpage import PDFPage
+-from pdfminer3.pdfinterp import PDFResourceManager, PDFPageInterpreter
+-from pdfminer3.converter import TextConverter
+-from pdfminer3.layout import LAParams
++from pdfminer.pdfpage import PDFPage
++from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
++from pdfminer.converter import TextConverter
++from pdfminer.layout import LAParams
+ 
+ from . import default_registry
+ from moin.utils.mime import Type, type_text_plain
+@@ -21,8 +21,8 @@ from moin import log
+ logging = log.getLogger(__name__)
+ 
+ 
+-# pdfminer3 creates many unwanted info messages
+-stdlogging.getLogger("pdfminer3").setLevel(logging.WARNING)
++# pdfminer creates many unwanted info messages
++stdlogging.getLogger("pdfminer").setLevel(logging.WARNING)
+ 
+ 
+ LAPARAMS = LAParams()

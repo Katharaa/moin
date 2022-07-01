@@ -1,0 +1,41 @@
+Description: Employ an environment variable to access data.
+ To avoid confusion between built and original files, access the wiki
+ data that is not included amongst the built/installed files.
+ .
+ moin (2.0-1) unstable; urgency=medium
+ .
+   * Initial release.
+Author: Paul Boddie <paul@boddie.org.uk>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2022-07-04
+
+--- moin-2.0.orig/src/moin/_tests/wikiconfig.py
++++ moin-2.0/src/moin/_tests/wikiconfig.py
+@@ -13,6 +13,7 @@ work without setting them (like data_dir
+ 
+ 
+ from os.path import abspath, dirname, join
++from os import environ
+ 
+ from moin.config.default import DefaultConfig
+ 
+@@ -21,7 +22,7 @@ class Config(DefaultConfig):
+     """
+     default configuration for the unit tests
+     """
+-    _here = abspath(dirname(__file__))
++    _here = abspath(environ["SRC_MOIN_TESTS"])
+     _root = abspath(join(_here, '..', '..'))
+     data_dir = join(_here, 'wiki', 'data')  # needed for plugins package TODO
+     index_storage = 'FileStorage', (join(_here, 'wiki', 'index'), ), {}

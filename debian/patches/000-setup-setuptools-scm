@@ -1,0 +1,35 @@
+Description: Remove setuptools_scm retrieval
+ Since the python3-setuptools-scm package is a build dependency, setup.py
+ should not attempt to retrieve the package from the Python Package Index
+ itself.
+ .
+ moin (2.0-1) unstable; urgency=medium
+ .
+   * Initial release.
+Author: Paul Boddie <paul@boddie.org.uk>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2022-07-01
+
+--- moin-2.0.orig/setup.py
++++ moin-2.0/setup.py
+@@ -67,9 +67,6 @@ setup_args = dict(
+     use_scm_version={
+         'write_to': os.path.join(basedir, 'src', 'moin', '_version.py'),
+     },
+-    setup_requires=[
+-        'setuptools_scm',  # magically cares for version and packaged files
+-    ],
+     install_requires=[
+         'Babel==2.9.1',  # Babel 2.10.1 breaks quickinstall.py #1239
+         'blinker>=1.1',  # event signalling (e.g. for change notification trigger)

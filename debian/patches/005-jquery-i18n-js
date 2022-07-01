@@ -1,0 +1,162 @@
+Description: Updated jQuery-i18n sources
+ Updated and added the original jQuery-i18n source.
+ .
+ moin (2.0-1) unstable; urgency=medium
+ .
+   * Initial release.
+Author: Paul Boddie <paul@boddie.org.uk>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2022-07-04
+
+--- /dev/null
++++ moin-2.0/src/moin/static/js/jquery.i18n.js
+@@ -0,0 +1,120 @@
++/*!
++ * jQuery i18n plugin
++ * @requires jQuery v1.1 or later
++ *
++ * See https://github.com/recurser/jquery-i18n
++ *
++ * Licensed under the MIT license.
++ *
++ * Version: 1.1.2 (Fri, 11 Aug 2017 03:52:21 GMT)
++ */
++(function($) {
++  /**
++   * i18n provides a mechanism for translating strings using a jscript dictionary.
++   *
++   */
++
++  var __slice = Array.prototype.slice;
++
++  /*
++   * i18n property list
++   */
++  var i18n = {
++
++    dict: null,
++    missingPattern: null,
++
++    /**
++     * load()
++     *
++     * Load translations.
++     *
++     * @param  property_list i18nDict : The dictionary to use for translation.
++     */
++    load: function(i18nDict, missingPattern) {
++      if (this.dict !== null) {
++        $.extend(this.dict, i18nDict);
++      } else {
++        this.dict = i18nDict;
++      }
++
++      if (missingPattern) {
++        this.missingPattern = missingPattern;
++      }
++    },
++
++    /**
++     * unload()
++     *
++     * Unloads translations and clears the dictionary.
++     */
++    unload: function() {
++      this.dict           = null;
++      this.missingPattern = null;
++    },
++
++    /**
++     * _()
++     *
++     * Looks the given string up in the dictionary and returns the translation if
++     * one exists. If a translation is not found, returns the original word.
++     *
++     * @param  string str           : The string to translate.
++     * @param  property_list params.. : params for using printf() on the string.
++     *
++     * @return string               : Translated word.
++     */
++    _: function (str) {
++      dict = this.dict;
++      if (dict && dict.hasOwnProperty(str)) {
++        str = dict[str];
++      } else if (this.missingPattern !== null) {
++        return this.printf(this.missingPattern, str);
++      }
++      args = __slice.call(arguments);
++      args[0] = str;
++      // Substitute any params.
++      return this.printf.apply(this, args);
++    },
++
++    /*
++     * printf()
++     *
++     * Substitutes %s with parameters given in list. %%s is used to escape %s.
++     *
++     * @param  string str    : String to perform printf on.
++     * @param  string args   : Array of arguments for printf.
++     *
++     * @return string result : Substituted string
++     */
++    printf: function(str, args) {
++      if (arguments.length < 2) return str;
++      args = $.isArray(args) ? args : __slice.call(arguments, 1);
++      return str.replace(/([^%]|^)%(?:(\d+)\$)?s/g, function(p0, p, position) {
++        if (position) {
++          return p + args[parseInt(position)-1];
++        }
++        return p + args.shift();
++      }).replace(/%%s/g, '%s');
++    }
++
++  };
++
++  /*
++   * _t()
++   *
++   * Allows you to translate a jQuery selector.
++   *
++   * eg $('h1')._t('some text')
++   *
++   * @param  string str           : The string to translate .
++   * @param  property_list params : Params for using printf() on the string.
++   *
++   * @return element              : Chained and translated element(s).
++  */
++  $.fn._t = function(str, params) {
++    return $(this).html(i18n._.apply(i18n, arguments));
++  };
++
++  $.i18n = i18n;
++})(jQuery);
+--- moin-2.0.orig/src/moin/static/js/jquery.i18n.min.js
++++ moin-2.0/src/moin/static/js/jquery.i18n.min.js
+@@ -1,13 +1 @@
+-/*
+- * jQuery i18n plugin
+- * @requires jQuery v1.1 or later
+- *
+- * See http://recursive-design.com/projects/jquery-i18n/
+- *
+- * Licensed under the MIT license:
+- *   http://www.opensource.org/licenses/mit-license.php
+- *
+- * Version: 1.0.0 (201210141329)
+- */
+-(function(f){f.i18n={dict:null,setDictionary:function(a){this.dict=a},_:function(a,d){var e=a;if(this.dict&&this.dict[a])e=this.dict[a];return this.printf(e,d)},printf:function(a,d){if(!d)return a;for(var e="",c=/%(\d+)\$s/g,b=c.exec(a);b;){var g=parseInt(b[1],10)-1;a=a.replace("%"+b[1]+"$s",d[g]);b=c.exec(a)}c=a.split("%s");if(c.length>1)for(b=0;b<d.length;b++){if(c[b].length>0&&c[b].lastIndexOf("%")==c[b].length-1)c[b]+="s"+c.splice(b+1,1)[0];e+=c[b]+d[b]}return e+c[c.length-1]}};f.fn._t=function(a,
+-d){return f(this).text(f.i18n._(a,d))}})(jQuery);
++!function(a){var b=Array.prototype.slice,c={dict:null,missingPattern:null,load:function(b,c){null!==this.dict?a.extend(this.dict,b):this.dict=b,c&&(this.missingPattern=c)},unload:function(){this.dict=null,this.missingPattern=null},_:function(a){if(dict=this.dict,dict&&dict.hasOwnProperty(a))a=dict[a];else if(null!==this.missingPattern)return this.printf(this.missingPattern,a);return args=b.call(arguments),args[0]=a,this.printf.apply(this,args)},printf:function(c,d){return arguments.length<2?c:(d=a.isArray(d)?d:b.call(arguments,1),c.replace(/([^%]|^)%(?:(\d+)\$)?s/g,function(a,b,c){return c?b+d[parseInt(c)-1]:b+d.shift()}).replace(/%%s/g,"%s"))}};a.fn._t=function(){return a(this).html(c._.apply(c,arguments))},a.i18n=c}(jQuery);
+\ No newline at end of file

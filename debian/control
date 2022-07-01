@@ -1,0 +1,75 @@
+Source: moin
+Section: net
+Priority: optional
+Maintainer: Paul Boddie <paul@boddie.org.uk>
+Build-Depends:
+ debhelper-compat (= 13),
+ dh-python,
+ python3-all,
+ python3-setuptools,
+ python3-setuptools-scm,
+ python3-sphinx,
+ python3-sphinx-rtd-theme,
+ graphviz,
+ python3-pytest,
+ python3-docutils,
+ python3-emeraldtree,
+ python3-feedgen,
+ python3-flask,
+ python3-flask-babel,
+ python3-flask-caching,
+ python3-flask-script,
+ python3-flask-theme,
+ python3-flatland,
+ python3-markdown,
+ python3-passlib,
+ python3-pdfminer,
+ python3-pygments,
+ python3-sqlalchemy,
+ python3-werkzeug,
+ python3-whoosh
+Standards-Version: 3.9.5
+Homepage: http://moinmo.in/
+Testsuite: autopkgtest-pkg-python
+
+Package: python3-moinmoin2
+Architecture: all
+Depends:
+ python3-blinker,
+ python3-docutils,
+ python3-emeraldtree,
+ python3-flask,
+ python3-flask-babel,
+ python3-flask-caching,
+ python3-flask-script,
+ python3-flask-theme,
+ python3-flatland,
+ python3-feedgen,
+ python3-jinja2,
+ python3-markdown,
+ python3-markupsafe,
+ python3-passlib,
+ python3-pdfminer,
+ python3-pygments,
+ python3-sqlalchemy,
+ python3-werkzeug,
+ python3-whoosh,
+ python3-xstatic,
+ python3-xstatic-angular-bootstrap,
+ python3-xstatic-autosize,
+ python3-xstatic-ckeditor,
+ python3-xstatic-font-awesome,
+ python3-xstatic-jquery,
+ python3-xstatic-jquery-file-upload,
+ python3-xstatic-jquery.tablesorter,
+ python3-xstatic-pygments,
+ ${misc:Depends},
+ ${python3:Depends},
+ ${sphinxdoc:Depends}
+Recommends: default-mta | mail-transport-agent, libapache2-mod-wsgi-py3 | httpd-cgi
+Suggests: python3-ldap, python3-pil
+Description: Python clone of WikiWiki - library
+ A WikiWikiWeb is a collaborative hypertext environment, with an
+ emphasis on easy access to and modification of information. MoinMoin
+ is a Python WikiClone that allows you to easily set up your own wiki,
+ only requiring a Web server and a Python installation.
