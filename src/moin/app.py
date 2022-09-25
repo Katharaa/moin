@@ -86,8 +86,9 @@ def create_app_ext(flask_config_file=None, flask_config_dict=None,
             if not path.exists(flask_config_file):
                 flask_config_file = path.abspath('wikiconfig.py')
                 if not path.exists(flask_config_file):
-                    # we should be here only because wiki admin is performing `moin create-instance`
-                    if 'create-instance' in sys.argv:
+                    # we should be here only because wiki admin is running
+                    # `moin help` or `moin create-instance`
+                    if 'create-instance' in sys.argv or 'help' in sys.argv:
                         config_path = path.dirname(config.__file__)
                         flask_config_file = path.join(config_path, 'wikiconfig.py')
                     else:
@@ -197,8 +198,9 @@ def init_backends(app):
     try:
         app.storage.open()
     except EmptyIndexError:
-        # we should be here only because wiki admin is performing `moin create-instance`
-        if 'create-instance' in sys.argv:
+        # we should be here only because wiki admin is running
+        # `moin help` or `moin create-instance`
+        if 'create-instance' in sys.argv or 'help' in sys.argv:
             pass
         else:
             raise
@@ -304,9 +306,12 @@ def teardown_wiki(response):
             pass
     try:
         # whoosh cache performance
-        for cache in (flaskg.storage.parse_acl, flaskg.storage.eval_acl, flaskg.storage.get_acls, flaskg.storage.allows, ):
+        for cache in (flaskg.storage.parse_acl, flaskg.storage.eval_acl,
+                      flaskg.storage.get_acls, flaskg.storage.allows, ):
             if cache.cache_info()[3] > 0:
-                msg = 'cache = %s: hits = %s, misses = %s, maxsize = %s, size = %s' % ((cache.__name__, ) + cache.cache_info())
+                msg = 'cache = %s: hits = %s, misses = %s, maxsize = %s, size = %s' % (
+                    (cache.__name__, ) + cache.cache_info()
+                )
                 logging.debug(msg)
     except AttributeError:
         # moin commands may not have flaskg.storage

@@ -1,5 +1,6 @@
 # Copyright: 2008 MoinMoin:JohannesBerg
 # Copyright: 2008-2011 MoinMoin:ThomasWaldmann
+# Copyright: 2022 MoinMoin Project
 # License: GNU GPL v2 (or any later version), see LICENSE.txt for details.
 
 """
@@ -41,7 +42,7 @@ from moin.converters.moinwiki19_in import ConverterFormat19 as conv_in
 from moin.converters import default_registry
 from moin.utils.mime import type_moin_document
 from moin.utils.iri import Iri
-from moin.utils.tree import moin_page
+from moin.utils.tree import moin_page, xlink
 
 from moin import log
 logging = log.getLogger(__name__)
@@ -97,6 +98,7 @@ class ImportMoin19(Command):
         userid_old2new = {}
         indexer = app.storage
         backend = indexer.backend  # backend without indexing
+        users_itemlist = set()
         global custom_namespaces
         custom_namespaces = namespaces()
 
@@ -114,6 +116,7 @@ class ImportMoin19(Command):
             for user_name in user_names:
                 if rev.meta['name'][0] == user_name or rev.meta['name'][0].startswith(user_name + '/'):
                     rev.meta['namespace'] = 'users'
+                    users_itemlist.add(rev.meta['name'][0])  # save itemname for link migration
                     break
 
             if USERID in rev.meta:
@@ -121,7 +124,9 @@ class ImportMoin19(Command):
                     rev.meta[USERID] = userid_old2new[rev.meta[USERID]]
                 except KeyError:
                     # user profile lost, but userid referred by revision
-                    print("Missing userid {0!r}, editor of {1} revision {2}".format(rev.meta[USERID], rev.meta[NAME][0], rev.meta[REVID]))
+                    print("Missing userid {0!r}, editor of {1} revision {2}".format(
+                        rev.meta[USERID], rev.meta[NAME][0], rev.meta[REVID])
+                    )
                     del rev.meta[USERID]
             backend.store(rev.meta, rev.data)
             # item_name to itemid xref required for migrating user subscriptions
@@ -146,14 +151,26 @@ class ImportMoin19(Command):
             data_in = data.read().decode(CHARSET19)
             dom = self.conv_in(data_in, CONTENTTYPE_MOINWIKI)
 
+            iri = Iri(scheme='wiki', authority='', path='/' + item_name)
+            dom.set(moin_page.page_href, str(iri))
+            refs_conv(dom)
+
+            # migrate itemlinks to users namespace
+            itemlinks_19 = refs_conv.get_links()
+            itemlinks2chg = []
+            for link in itemlinks_19:
+                if link in users_itemlist:
+                    itemlinks2chg.append(link)
+            if len(itemlinks2chg) > 0:
+                migrate_users_links(dom, itemlinks2chg)
+
             # migrate macros that need update from 1.9 to 2.0
             migrate_macros(dom)  # in-place conversion
 
             out = self.conv_out(dom)
             out = out.encode(CHARSET19)
-            iri = Iri(scheme='wiki', authority='', path='/' + item_name)
-            dom.set(moin_page.page_href, str(iri))
-            refs_conv(dom)
+            if len(itemlinks2chg) > 0:
+                refs_conv(dom)  # refresh changed itemlinks
             meta[ITEMLINKS] = refs_conv.get_links()
             meta[ITEMTRANSCLUSIONS] = refs_conv.get_transclusions()
             meta[EXTERNALLINKS] = refs_conv.get_external_links()
@@ -223,7 +240,9 @@ class PageBackend:
             except KillRequested:
                 pass  # a message was already output
             except (IOError, AttributeError):
-                print("    >> Error: {0} is missing file 'current' or 'edit-log'".format(os.path.normcase(os.path.join(pages_dir, f))))
+                print("    >> Error: {0} is missing file 'current' or 'edit-log'".format(
+                    os.path.normcase(os.path.join(pages_dir, f)))
+                )
             except Exception:
                 logging.exception(("PageItem {0!r} raised exception:".format(itemname))).encode('utf-8')
             else:
@@ -374,18 +393,23 @@ class PageRevision:
                 meta[TAGS].append(TEMPLATE)
             else:
                 meta[TAGS] = [TEMPLATE]
-        # if this revision matches a custom namespace defined in wikiconfig, then modify the meta data for namespace and name
+        # if this revision matches a custom namespace defined in wikiconfig,
+        # then modify the meta data for namespace and name
         for custom_namespace in custom_namespaces:
             if meta['name'][0] == custom_namespace:
                 # cannot have itemname == namespace_name, so we rename. XXX may create an item with duplicate name
                 new_name = app.cfg.root_mapping.get(meta['name'][0], app.cfg.default_root)
-                print("    Converting {0} to namespace:homepage {1}:{2}".format(meta['name'][0], custom_namespace, new_name))
+                print("    Converting {0} to namespace:homepage {1}:{2}".format(
+                    meta['name'][0], custom_namespace, new_name)
+                )
                 meta['namespace'] = custom_namespace
                 meta['name'] = [new_name]
                 break
             if meta['name'][0].startswith(custom_namespace + '/'):
                 # split the namespace from the name
-                print("    Converting {0} to namespace:itemname {1}:{2}".format(meta['name'][0], custom_namespace, meta['name'][0][len(custom_namespace) + 1:]))
+                print("    Converting {0} to namespace:itemname {1}:{2}".format(
+                    meta['name'][0], custom_namespace, meta['name'][0][len(custom_namespace) + 1:])
+                )
                 meta['namespace'] = custom_namespace
                 meta['name'] = [meta['name'][0][len(custom_namespace) + 1:]]
                 break
@@ -433,6 +457,22 @@ class PageRevision:
         if meta[CONTENTTYPE] == CONTENTTYPE_MOINWIKI:
             data = process_categories(meta, data, self.backend.item_category_regex)
         return data
+
+
+def migrate_users_links(dom, itemlinks2chg):
+    """ Walk the DOM tree and change itemlinks to users namespace
+
+    :param dom: the tree to check for elements to migrate
+    :param itemlinks2chg: list of itemlinks to be changed
+    :type dom: emeraldtree.tree.Element
+    """
+
+    for node in dom.iter_elements_tree():
+        if node.tag.name == 'a':
+            path_19 = str(node.attrib[xlink.href].path)
+            if node.attrib[xlink.href].scheme == 'wiki.local' and path_19 in itemlinks2chg:
+                print("    >> Info: Changing link from " + path_19 + " to users/" + path_19)
+                node.attrib[xlink.href].path = 'users/' + path_19
 
 
 def process_categories(meta, data, item_category_regex):
@@ -763,7 +803,8 @@ class UserRevision:
                 if ":" in subscribed_item:
                     wikiname, subscribed_item = subscribed_item.split(":", 1)
 
-                if subscribed_item.endswith(".*") and len(subscribed_item) > 2 and not any(x in subscribed_item[:-2] for x in RECHARS):
+                if (subscribed_item.endswith(".*") and len(subscribed_item) > 2
+                        and not any(x in subscribed_item[:-2] for x in RECHARS)):
                     subscriptions.append("{0}:{1}:{2}".format(NAMEPREFIX, wikiname, subscribed_item[:-2]))
                 else:
                     subscriptions.append("{0}:{1}:{2}".format(NAMERE, wikiname, subscribed_item))

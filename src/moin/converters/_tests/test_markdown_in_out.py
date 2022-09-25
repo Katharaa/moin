@@ -95,7 +95,7 @@ class TestConverter:
         ('[TOC]\n',
          '[TOC]\n'),
         ('|Tables|Are|Very|Cool|\n|------|:----:|-----:|:-----|\n|col 2 is|centered|$12|Gloves|\n',
-         '|Tables|Are|Very|Cool|\n|------|:----:|-----:|:-----|\n|col 2 is|centered{: class="center"}|$12{: class="right"}|Gloves{: class="left"}|\n'),
+         '|Tables|Are|Very|Cool|\n|------|:----:|-----:|:-----|\n|col 2 is|centered|$12|Gloves|\n'),
         # TODO: wrong output, creates indented blockcode, loses fenced code language
         # fix probably requires replacing site-packages/markdown/extensions/codehilite.py
         ('``` javascript\nvar s = "JavaScript syntax highlighting";\nalert(s);\n```\n',
@@ -174,11 +174,11 @@ class TestConverter:
         ('|A|B|C|\n|-|-|-|\n|1|2|3|\n',
          '|A|B|C|\n|------|------|------|\n|1|2|3|\n'),
         ('|A|B|C|\n|:-|:-:|-:|\n|1|2|3|\n',
-         '|A|B|C|\n|:-----|:----:|-----:|\n|1{: class="left"}|2{: class="center"}|3{: class="right"}|\n'),
+         '|A|B|C|\n|:-----|:----:|-----:|\n|1|2|3|\n'),
         ('A|B|C\n-|-|-\n1|2|3\n',
          '|A|B|C|\n|------|------|------|\n|1|2|3|\n'),
         ('`A`|*B*|_C_\n:-|:-:|-:\n1|2|3\n',
-         '|`A`|*B*|*C*|\n|:-----|:----:|-----:|\n|1{: class="left"}|2{: class="center"}|3{: class="right"}|\n'),
+         '|`A`|*B*|*C*|\n|:-----|:----:|-----:|\n|1|2|3|\n'),
     ]
 
     @pytest.mark.parametrize('input,output', data)

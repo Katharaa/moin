@@ -49,6 +49,7 @@ usually it is even just the small and thus quick latest-revs index.
 """
 
 import os
+import sys
 import shutil
 import datetime
 import time
@@ -80,6 +81,7 @@ from moin.utils.mime import Type, type_moin_document
 from moin.utils.tree import moin_page
 from moin.converters import default_registry
 from moin.utils.iri import Iri
+from moin.i18n import _
 
 from moin import log
 logging = log.getLogger(__name__)
@@ -90,7 +92,8 @@ INDEXES = [LATEST_REVS, ALL_REVS, ]
 
 VALIDATION_HANDLING_STRICT = 'strict'
 VALIDATION_HANDLING_WARN = 'warn'
-VALIDATION_HANDLING = VALIDATION_HANDLING_WARN
+# TODO: fix tests to create valid metadata
+VALIDATION_HANDLING = VALIDATION_HANDLING_WARN if "pytest" in sys.modules else VALIDATION_HANDLING_STRICT
 
 INDEXER_TIMEOUT = 20.0
 
@@ -116,37 +119,6 @@ def get_indexer(fn, **kw):
         if time.time() > until:
             raise KeyError(kw.get('revid', '') + ' - server overload or corrupt index')
     return indexer
-
-
-def get_names(meta):
-    """
-    Get the (list of) names from meta data and deal with misc. bad things that
-    can happen then (while not all code is fixed to do it correctly).
-
-    TODO make sure meta[NAME] is always a list of str
-
-    :param meta: a metadata dictionary that might have a NAME key
-    :return: list of names
-    """
-    msg = "NAME is not a list but %r - fix this! Workaround enabled."
-    names = meta.get(NAME)
-    if names is None:
-        logging.warning(msg % names)
-        names = []
-    elif isinstance(names, bytes):
-        logging.warning(msg % names)
-        names = [names.decode('utf-8'), ]
-    elif isinstance(names, str):
-        logging.warning(msg % names)
-        names = [names, ]
-    elif isinstance(names, tuple):
-        logging.warning(msg % names)
-        names = list(names)
-    elif not isinstance(names, list):
-        raise TypeError("NAME is not a list but %r - fix this!" % names)
-    if not names:
-        names = []
-    return names
 
 
 def parent_names(names):
@@ -350,8 +322,10 @@ class IndexingMiddleware:
         self.ix = {}  # open indexes
         self.schemas = {}  # existing schemas
 
-        # field_boosts favor hits on names, tags, summary, comment, content, namengram, summaryngram, and contentngram respectively
-        # when query_parser default search includes [NAMES, NAMENGRAM, TAGS, SUMMARY, SUMMARYNGRAM, CONTENT, CONTENTNGRAM, COMMENT].
+        # field_boosts favor hits on names, tags, summary, comment, content, namengram,
+        # summaryngram and contentngram respectively
+        # when query_parser default search includes [NAMES, NAMENGRAM, TAGS, SUMMARY,
+        # SUMMARYNGRAM, CONTENT, CONTENTNGRAM, COMMENT].
         # Note *NGRAMS are only present in latest_revs index, see below
         common_fields = {
             # wikiname so we can have a shared index in a wiki farm, always check this!
@@ -1040,7 +1014,7 @@ class PropertiesMixin:
 
     @property
     def names(self):
-        return get_names(self.meta)
+        return self.meta[NAME]
 
     @property
     def mtime(self):
@@ -1220,12 +1194,16 @@ class Item(PropertiesMixin):
         m = Schema(meta)
         valid = m.validate(state)
         if not valid:
-            logging.warning("metadata validation failed, see below")
+            logging.warning("data validation skipped because metadata is invalid, see below")
+            val = []
             for e in m.children:
-                logging.warning("{0}, {1}".format(e.valid, e))
-            logging.warning("data validation skipped as we have no valid metadata")
+                logging.warning("{0}, {1}, {2}".format(e.valid, e.name, e.raw))
+                if e.valid is False:
+                    val.append(str(e))
             if VALIDATION_HANDLING == VALIDATION_HANDLING_STRICT:
-                raise ValueError('metadata validation failed and strict handling requested, see the log for details')
+                raise ValueError(_('Error: metadata validation failed, invalid field value(s) = {0}'.format(
+                    ', '.join(val)
+                )))
 
         # we do not have anything in m that is not defined in the schema,
         # e.g. userdefined meta keys or stuff we do not validate. thus, we
@@ -1239,9 +1217,9 @@ class Item(PropertiesMixin):
             meta[SUMMARY] = ""
 
         if valid and not validate_data(meta, data):  # need valid metadata to validate data
-            logging.warning("data validation failed")
+            logging.warning("data validation failed for item {0} ".format(meta[NAME]))
             if VALIDATION_HANDLING == VALIDATION_HANDLING_STRICT:
-                raise ValueError('data validation failed and strict handling requested, see the log for details')
+                raise ValueError(_('Error: nothing changed. Data unicode validation failed.'))
 
         if self.itemid is None:
             self.itemid = meta[ITEMID]

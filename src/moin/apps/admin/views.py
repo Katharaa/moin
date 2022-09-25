@@ -117,7 +117,7 @@ def register_new_user():
                 emails = user.search_users(email=email)
                 if emails:
                     flash(_("This email already belongs to somebody else."), 'error')
-            if not(users or emails):
+            if not (users or emails):
                 user_profile.save()
                 flash(_("Account for %(username)s created", username=username), "info")
                 form = FormClass.from_defaults()
@@ -362,7 +362,8 @@ def itemsize():
         _('Size'),
         _('Item name'),
     ]
-    query = And([Term(WIKINAME, app.cfg.interwikiname), Not(Term(NAMESPACE, NAMESPACE_USERPROFILES)), Not(Term(TRASH, True))])
+    query = And([Term(WIKINAME, app.cfg.interwikiname), Not(Term(NAMESPACE, NAMESPACE_USERPROFILES)),
+                 Not(Term(TRASH, True))])
     revs = flaskg.storage.search_meta(query, idx_name=LATEST_REVS, sortedby=[NAME], limit=None)
     rows = [(rev[SIZE], CompositeName(rev[NAMESPACE], NAME_EXACT, rev[NAME][0]))
             for rev in revs]
@@ -395,7 +396,8 @@ def _trashed(namespace):
     results = []
     for meta in flaskg.storage.search_meta(q, limit=None):
         fqname = CompositeName(meta[NAMESPACE], ITEMID, meta[ITEMID])
-        results.append(trashedEntry(fqname, meta[NAME_OLD], meta[REVID], meta[REV_NUMBER], meta[MTIME], meta[COMMENT], get_editor_info(meta), meta[PARENTID]))
+        results.append(trashedEntry(fqname, meta[NAME_OLD], meta[REVID], meta[REV_NUMBER], meta[MTIME],
+                                    meta[COMMENT], get_editor_info(meta), meta[PARENTID]))
     return results
 
 
@@ -539,16 +541,19 @@ def modify_acl(item_name):
         if new_acl in ('Empty', ''):
             meta[ACL] = ''
         elif new_acl == 'None' and ACL in meta:
-            del(meta[ACL])
+            del (meta[ACL])
         else:
             meta[ACL] = new_acl
         try:
             item._save(meta=meta)
         except AccessDenied:
             # superuser viewed item acl report and tried to change acl but lacked admin permission
-            flash(L_("Failed! Not authorized.<br>Item: %(item_name)s<br>ACL: %(acl_rule)s", item_name=fqname.fullname, acl_rule=old_acl), "error")
+            flash(L_("Failed! Not authorized.<br>Item: %(item_name)s<br>ACL: %(acl_rule)s",
+                     item_name=fqname.fullname, acl_rule=old_acl), "error")
             return redirect(url_for('.item_acl_report'))
-        flash(L_("Success! ACL saved.<br>Item: %(item_name)s<br>ACL: %(acl_rule)s", item_name=fqname.fullname, acl_rule=new_acl), "info")
+        flash(L_("Success! ACL saved.<br>Item: %(item_name)s<br>ACL: %(acl_rule)s",
+                 item_name=fqname.fullname, acl_rule=new_acl), "info")
     else:
-        flash(L_("Nothing changed, invalid ACL.<br>Item: %(item_name)s<br>ACL: %(acl_rule)s", item_name=fqname.fullname, acl_rule=new_acl), "error")
+        flash(L_("Nothing changed, invalid ACL.<br>Item: %(item_name)s<br>ACL: %(acl_rule)s",
+                 item_name=fqname.fullname, acl_rule=new_acl), "error")
     return redirect(url_for('.item_acl_report'))
