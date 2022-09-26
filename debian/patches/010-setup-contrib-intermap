@@ -1,0 +1,31 @@
+Description: Add contrib package data for intermap.txt.
+ The moin create-instance command fails if intermap.txt is not installed.
+ .
+ moin (2.0-1) unstable; urgency=medium
+ .
+   * Initial release.
+Author: Paul Boddie <paul@boddie.org.uk>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2022-09-26
+
+--- moin-2.0.orig/setup.py
++++ moin-2.0/setup.py
+@@ -61,6 +61,7 @@ setup_args = dict(
+         'moin.templates': ['*.html', '*.xml', ],
+         'moin.apps.admin.templates': ['*.html', ],
+         'moin.apps.misc.templates': ['*.html', '*.txt', ],
++        'moin.contrib': ['*.txt', ],
+     },
+     include_package_data=True,
+     zip_safe=False,
