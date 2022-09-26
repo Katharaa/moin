@@ -1,0 +1,47 @@
+Description: Adopt newer package dependencies.
+ Since Debian has moved to newer versions of Flask, Jinja2 and Werkzeug,
+ this package also needs to adopt these newer dependencies, with Moin
+ itself needing upstream work to migrate to them.
+ .
+ moin (2.0-1) unstable; urgency=medium
+ .
+   * Initial release.
+Author: Paul Boddie <paul@boddie.org.uk>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2022-09-26
+
+--- moin-2.0.orig/setup.py
++++ moin-2.0/setup.py
+@@ -72,7 +72,7 @@ setup_args = dict(
+         'blinker>=1.1',  # event signalling (e.g. for change notification trigger)
+         'docutils<0.18',  # reST markup processing, see #1141; sphinx 4.3.0 requires docutils<0.18,>=0.14
+         'Markdown>=3.4.1',  # Markdown markup processing
+-        'Flask<2.0.0',  # micro framework
++        'Flask>=2.0.0',  # micro framework
+         'Flask-Babel>=0.11.1',  # i18n support
+         'Flask-Caching>=1.2.0',  # caching support
+         'Flask-Script>=2.0.5',  # scripting support
+@@ -80,10 +80,10 @@ setup_args = dict(
+         'emeraldtree>=0.10.0',  # xml processing
+         'feedgen==0.9.*',  # Atom feed
+         'flatland>=0.8',  # form handling
+-        'Jinja2<3.0.0',  # template engine
++        'Jinja2>=3.0.0',  # template engine
+         'markupsafe==2.0.1',  # required by jinja2<3.0.0
+         'pygments>=1.4',  # src code / text file highlighting
+-        'Werkzeug<2.0.0',  # wsgi toolkit
++        'Werkzeug>=2.0.0',  # wsgi toolkit
+         'whoosh>=2.7.0',  # needed for indexed search
+         'pdfminer3',  # pdf -> text/plain conversion
+         'passlib>=1.6.0',  # strong password hashing (1.6 needed for consteq)
