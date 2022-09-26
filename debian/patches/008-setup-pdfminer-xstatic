@@ -2,8 +2,8 @@ Description: Fix Python packaging metadata.
  The Python packaging name for pdfminer may leak out into requires.txt
  files used by the Python import system, causing Python to refuse to
  look for the installed module/package despite it being present and
- readily discoverable. Various XStatic packages appear to have incorrect
- names and potentially inappropriate versions for Debian.
+ readily discoverable. Various XStatic packages appear to have
+ currently unavailable versions for Debian.
  .
  moin (2.0-1) unstable; urgency=medium
  .
@@ -35,8 +35,7 @@ Last-Update: 2022-09-26
          'setuptools>=51',  # dependency with setuptools_scm
          'sqlalchemy>=1.3.16',  # used by sqla store TODO see: #1014
          'XStatic>=0.0.2',  # support for static file pypi packages
--        'XStatic-Bootstrap==3.1.1.2',
-+        'XStatic-Angular-Bootstrap',
+         'XStatic-Bootstrap==3.1.1.2',
          'XStatic-Font-Awesome>=4.1.0.0',
          'XStatic-CKEditor>=3.6.1.2',
          'XStatic-autosize',
