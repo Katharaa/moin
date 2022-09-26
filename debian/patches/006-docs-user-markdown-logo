@@ -1,0 +1,35 @@
+Description: Removed remote site reference for logo.
+ Although the documentation demonstrates remote logo referencing, this is
+ regarded as a privacy violation in Debian. To ensure that the example is
+ still illustrative, a local version of the logo is used instead in the
+ actual markup that is converted to HTML.
+ .
+ moin (2.0-1) unstable; urgency=medium
+ .
+   * Initial release.
+Author: Paul Boddie <paul@boddie.org.uk>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2022-09-26
+
+--- moin-2.0.orig/docs/user/markdown.rst
++++ moin-2.0/docs/user/markdown.rst
+@@ -424,7 +424,7 @@ do not appear in the rendered HTML:
+ 
+ To transclude image from remote site:
+ 
+-.. image:: http://static.moinmo.in/logos/moinmoin.png
++.. image:: moinmoin.png
+    :alt: remote image
+    :align: right
+ 
