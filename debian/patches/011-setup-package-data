@@ -1,0 +1,72 @@
+Description: Fix package data installation.
+ The provided package_data settings for static data and themes are
+ insufficient and will not copy the data. A function has been introduced
+ to identify the data files in each location.
+ .
+ moin (2.0-1) unstable; urgency=medium
+ .
+   * Initial release.
+Author: Paul Boddie <paul@boddie.org.uk>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2022-09-26
+
+--- moin-2.0.orig/setup.py
++++ moin-2.0/setup.py
+@@ -5,6 +5,7 @@
+ 
+ import os
+ from setuptools import setup, find_packages
++from glob import glob
+ 
+ 
+ basedir = os.path.abspath(os.path.dirname(__file__))
+@@ -12,6 +13,18 @@ with open(os.path.join(basedir, 'README.rst')) as f:
+     long_description = f.read()
+ 
+ 
++def find_files(base, names):
++    base = os.path.join(basedir, base)
++    base = os.path.join(os.path.normpath(base), "")
++    l = []
++    for name in names:
++        d = os.path.join(base, name)
++        pattern = os.path.join(d, "**")
++        for s in glob(pattern, recursive=True):
++            l.append(s[len(base):])
++    return l
++
++
+ setup_args = dict(
+     name="moin",
+     python_requires='>=3.8',
+@@ -52,15 +65,10 @@ setup_args = dict(
+     package_dir={'': 'src'},
+ 
+     package_data={
+-        'moin.translations': ['MoinMoin.pot', '*.po', ],
+-        'moin.static': ['*', ],
+-        'moin.themes.modernized': ['*', ],
+-        'moin.themes.basic': ['*', ],
+-        'moin.themes.topside': ['*', ],
+-        'moin.themes.topside_cms': ['*', ],
+-        'moin.templates': ['*.html', '*.xml', ],
+-        'moin.apps.admin.templates': ['*.html', ],
+-        'moin.apps.misc.templates': ['*.html', '*.txt', ],
++        'moin': find_files('src/moin', ['static', 'templates', 'translations']),
++        'moin.themes': find_files('src/moin/themes', ['modernized', 'basic', 'topside', 'topside_cms']),
++        'moin.apps.admin': find_files('src/moin/apps/admin', ['templates']),
++        'moin.apps.misc': find_files('src/moin/apps/misc', ['templates']),
+         'moin.contrib': ['*.txt', ],
+     },
+     include_package_data=True,
