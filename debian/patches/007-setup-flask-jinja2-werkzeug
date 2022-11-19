@@ -3,7 +3,7 @@ Description: Adopt newer package dependencies.
  this package also needs to adopt these newer dependencies, with Moin
  itself needing upstream work to migrate to them.
  .
- moin (2.0-1) unstable; urgency=medium
+ moin (2.0+git20220927.beec62a5-1) unstable; urgency=medium
  .
    * Initial release.
 Author: Paul Boddie <paul@boddie.org.uk>
