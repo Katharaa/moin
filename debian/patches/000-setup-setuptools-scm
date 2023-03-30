@@ -3,7 +3,7 @@ Description: Remove setuptools_scm retrieval
  should not attempt to retrieve the package from the Python Package Index
  itself.
  .
- moin (2.0+git20220927.beec62a5-1) unstable; urgency=medium
+ moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
  .
    * Initial release.
 Author: Paul Boddie <paul@boddie.org.uk>

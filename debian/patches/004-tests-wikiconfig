@@ -2,7 +2,7 @@ Description: Employ an environment variable to access data.
  To avoid confusion between built and original files, access the wiki
  data that is not included amongst the built/installed files.
  .
- moin (2.0+git20220927.beec62a5-1) unstable; urgency=medium
+ moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
  .
    * Initial release.
 Author: Paul Boddie <paul@boddie.org.uk>
