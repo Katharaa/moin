@@ -42,7 +42,7 @@ from flask_theme import get_themes_list
 from flatland import Form
 from flatland.validation import Validator
 
-from jinja2 import Markup
+from markupsafe import Markup
 
 import pytz
 from babel import Locale
@@ -70,7 +70,7 @@ from moin.constants.itemtypes import ITEMTYPE_DEFAULT, ITEMTYPE_TICKET
 from moin.constants.contenttypes import *  # noqa
 from moin.constants.rights import SUPERUSER
 from moin.utils import crypto, rev_navigation, close_file, show_time
-from moin.utils.crypto import make_uuid
+from moin.utils.crypto import make_uuid, hash_hexdigest
 from moin.utils.interwiki import url_for_item, split_fqname, CompositeName
 from moin.utils.mime import Type, type_moin_document
 from moin.utils.tree import html, docbook
@@ -79,7 +79,7 @@ from moin.search.analyzers import item_name_analyzer
 from moin.signalling import item_displayed, item_modified
 from moin.storage.middleware.protecting import AccessDenied, gen_fqnames
 from moin.converters import default_registry as reg
-from moin.scripts.migration.moin19.import19 import hash_hexdigest
+# from moin.cli.migration.moin19.import19 import hash_hexdigest
 from moin.storage.middleware.validation import validate_data
 import moin.utils.mimetype as mime_type
 
@@ -2109,13 +2109,7 @@ class LoginForm(Form):
 
 @frontend.route('/+login', methods=['GET', 'POST'])
 def login():
-    if flaskg.user.valid:
-        flash(_("You are logged in."), "info")
-        form = LoginForm.from_flat(request.form)
-        nexturl = form['nexturl']
-        return redirect(nexturl)
     title_name = _('Login')
-
     if request.method in ['GET', 'HEAD']:
         form = LoginForm.from_defaults()
         next_url = request.referrer or url_for('.show_root')
@@ -2127,14 +2121,14 @@ def login():
             if hint:
                 flash(hint, "info")
     elif request.method == 'POST':
-        # this is executed when login fails do to bad ID or pw - app.py > def setup_user does successful logins
         form = LoginForm.from_flat(request.form)
         if form.validate():
-            # is this dead code? we have a logged-in, valid user
+            flash(_("You are logged in."), "info")
             nexturl = form['nexturl']
-            return redirect(nexturl)
-        # flash the error messages (if any)
+            return redirect(str(nexturl))
+        # this is executed when login fails due to bad ID or pw - app.py > def setup_user does successful logins
         for msg in flaskg._login_messages:
+            # flash the error messages for failed login
             flash(msg, "error")
     return render_template('login.html',
                            title_name=title_name,

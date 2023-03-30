@@ -28,7 +28,7 @@ def file_uncompressed(path):
     return FileStore(path, 'test_table', compression_level=0)
 
 
-all_setups = pytest.mark.multi(Store=[
+all_setups = pytest.mark.parametrize('Store', [
     bytes_uncompressed,
     bytes_compressed,
     file_uncompressed,
@@ -44,17 +44,11 @@ def test_create(tmpdir, Store):
     assert not dbfile.check()
     store.create()
     assert dbfile.check()
-    return store
-
-
-@all_setups
-def test_destroy(tmpdir, Store):
-    store = test_create(tmpdir, Store)
     store.destroy()
-    # XXX: check for dropped table
+    # TODO: check for dropped table
 
 
-@pytest.mark.multi(Store=[BytesStore, FileStore])
+@pytest.mark.parametrize('Store', [BytesStore, FileStore])
 def test_from_uri(tmpdir, Store):
     store = Store.from_uri("%s::test_table::0" % tmpdir)
     assert store.db_name == tmpdir

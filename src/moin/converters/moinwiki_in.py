@@ -736,9 +736,12 @@ class Converter(ConverterMacro):
             if link_item.startswith(att):
                 link_item = '/' + link_item[len(att):]  # now we have a subitem
             if '#' in link_item:
-                if link_item.startswith('#') and '/+convert/' in request.url:
-                    # avoid traceback in link.py when converting moinwiki item to reST | HTML | Docbook
-                    link_item = request.url.split('+convert/')[-1] + link_item
+                try:
+                    if link_item.startswith('#') and '/+convert/' in request.url:
+                        # avoid traceback in link.py when converting moinwiki item to reST | HTML | Docbook
+                        link_item = request.url.split('+convert/')[-1] + link_item
+                except RuntimeError:  # CLI call has no valid request context
+                    pass
                 link_item, fragment = link_item.rsplit('#', 1)
             else:
                 link_item, fragment = link_item, None
@@ -852,7 +855,7 @@ class Converter(ConverterMacro):
             attrib[html.alt] = object_text
         if object_item is not None:
             # img tag
-            query = url_encode(query_keys, charset=CHARSET, encode_keys=True)
+            query = url_encode(query_keys, charset=CHARSET)
             # TODO: moin 1.9 needed this for an attached file; move functionality to scripts/migration/moin/import19.py
             att = 'attachment:'
             if object_item.startswith(att):
@@ -880,7 +883,21 @@ class Converter(ConverterMacro):
                 (?P<cell_args> ([^<])*? )
                 >
             )?
-            (?P<cell_text> .*? )
+            (?P<cell_text>
+                (
+                    (.*?                       # optional text before link or transclusion
+                        (
+                            ((\[\[) | (\{\{))  # start of link or transclusion
+                            .*?
+                            ((\]\]) | (\}\}))  # end of link or transclusion
+                            .*?                # optional text after link or transclusion
+                        )*?                    # there may be multiple links or transclusion within a cell
+                        (?=((\|\|) | $))       # lookahead sees end of cell
+                    )
+                    |
+                    .*?(?=(\|\|) | $)          # simple case, no transclusion or link in cell
+                )*
+            )
             (?=
                 \|\|
                 |

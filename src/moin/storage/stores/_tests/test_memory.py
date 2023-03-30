@@ -11,27 +11,19 @@ import pytest
 from ..memory import BytesStore, FileStore
 
 
-@pytest.mark.multi(Store=[BytesStore, FileStore])
-def test_create(Store):
+@pytest.mark.parametrize('Store', [BytesStore, FileStore])
+def test_create_and_destroy(Store):
     store = Store()
     assert store._st is None
-
     store.create()
     store.open()
     assert store._st == {}
-
-    return store
-
-
-@pytest.mark.multi(Store=[BytesStore, FileStore])
-def test_destroy(Store):
-    store = test_create(Store)
     store.close()
     store.destroy()
     assert store._st is None
 
 
-@pytest.mark.multi(Store=[BytesStore, FileStore])
+@pytest.mark.parametrize('Store', [BytesStore, FileStore])
 def test_from_uri(Store):
     store = Store.from_uri("mem://")
     assert isinstance(store, Store)

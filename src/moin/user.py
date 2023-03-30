@@ -508,13 +508,20 @@ class User:
             password = self._cfg.cache.pwd_context.hash(password)
         self.profile[ENC_PASSWORD] = password
         # Invalidate all other browser sessions except this one.
-        session['user.session_token'] = self.generate_session_token(False)
+        try:
+            session['user.session_token'] = self.generate_session_token(False)
+        except RuntimeError:  # CLI call has no valid session context
+            pass
 
     def has_invalidated_password(self):
         """
         Check if the password hash of this user is invalid.
         """
         return self.profile[ENC_PASSWORD] == ''
+
+    def disable(self):
+        """ Disable user """
+        self.profile[DISABLED] = True
 
     def save(self, force=False):
         """
