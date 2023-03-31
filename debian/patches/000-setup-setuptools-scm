@@ -31,5 +31,5 @@ Last-Update: 2022-07-01
 -        'setuptools_scm',  # magically cares for version and packaged files
 -    ],
      install_requires=[
-         'Babel==2.9.1',  # Babel 2.10.1 breaks quickinstall.py #1239
+         'Babel>=2.10.0',  # internationalization support
          'blinker>=1.1',  # event signalling (e.g. for change notification trigger)
