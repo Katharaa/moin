@@ -1,28 +1,22 @@
-Description: Use pdfminer instead of pdfminer3.
- It seems that pdfminer3 is an old fork of pdfminer for Python 3.
- However, pdfminer now seems to be available for Python 3, and it
- is packaged for Debian, too.
- .
- moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
- .
-   * Initial release.
-Author: Paul Boddie <paul@boddie.org.uk>
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Tue, 15 Aug 2023 23:50:33 +0200
+Subject: Use pdfminer instead of pdfminer3.
 
+It seems that pdfminer3 is an old fork of pdfminer for Python 3.
+However, pdfminer now seems to be available for Python 3, and it
+is packaged for Debian, too.
+
+moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
+
+  * Initial release.
 ---
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
+ src/moin/converters/pdf_in.py | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: https://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: 2022-07-03
-
---- moin-2.0.orig/src/moin/converters/pdf_in.py
-+++ moin-2.0/src/moin/converters/pdf_in.py
+diff --git a/src/moin/converters/pdf_in.py b/src/moin/converters/pdf_in.py
+index 891b43b..3684366 100644
+--- a/src/moin/converters/pdf_in.py
++++ b/src/moin/converters/pdf_in.py
 @@ -9,10 +9,10 @@ import io
  from datetime import datetime, timedelta
  import logging as stdlogging

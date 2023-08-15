@@ -1,26 +1,20 @@
-Description: Add contrib package data for intermap.txt.
- The moin create-instance command fails if intermap.txt is not installed.
- .
- moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
- .
-   * Initial release.
-Author: Paul Boddie <paul@boddie.org.uk>
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Tue, 15 Aug 2023 23:50:33 +0200
+Subject: Add contrib package data for intermap.txt.
 
+The moin create-instance command fails if intermap.txt is not installed.
+
+moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
+
+  * Initial release.
 ---
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
+ setup.py | 1 +
+ 1 file changed, 1 insertion(+)
 
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: https://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: 2022-09-26
-
---- moin-2.0.orig/setup.py
-+++ moin-2.0/setup.py
+diff --git a/setup.py b/setup.py
+index a095656..9caab9f 100644
+--- a/setup.py
++++ b/setup.py
 @@ -61,6 +61,7 @@ setup_args = dict(
          'moin.templates': ['*.html', '*.xml', ],
          'moin.apps.admin.templates': ['*.html', ],

@@ -1,29 +1,23 @@
-Description: Adopt newer package dependencies.
- Since Debian has moved to newer versions of Flask, Jinja2 and Werkzeug,
- this package also needs to adopt these newer dependencies, with Moin
- itself needing upstream work to migrate to them.
- .
- moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
- .
-   * Initial release.
-Author: Paul Boddie <paul@boddie.org.uk>
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Tue, 15 Aug 2023 23:50:33 +0200
+Subject: Adopt newer package dependencies.
 
+Since Debian has moved to newer versions of Flask, Jinja2 and Werkzeug,
+this package also needs to adopt these newer dependencies, with Moin
+itself needing upstream work to migrate to them.
+
+moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
+
+  * Initial release.
 ---
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
+ setup.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: https://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: 2022-09-26
-
---- moin-2.0.orig/setup.py
-+++ moin-2.0/setup.py
-@@ -80,10 +80,10 @@ setup_args = dict(
+diff --git a/setup.py b/setup.py
+index 3ba663c..8f640da 100644
+--- a/setup.py
++++ b/setup.py
+@@ -79,7 +79,7 @@ setup_args = dict(
          'emeraldtree>=0.10.0',  # xml processing
          'feedgen==0.9.*',  # Atom feed
          'flatland>=0.8',  # form handling
@@ -32,6 +26,3 @@ Last-Update: 2022-09-26
          'markupsafe<=2.2.0',  # safe html and xml
          'pygments>=1.4',  # src code / text file highlighting
          'Werkzeug<2.4.0',  # wsgi toolkit
-         'whoosh>=2.7.0',  # needed for indexed search
-         'pdfminer3',  # pdf -> text/plain conversion
-         'passlib>=1.6.0',  # strong password hashing (1.6 needed for consteq)

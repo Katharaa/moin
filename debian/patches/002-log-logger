@@ -1,27 +1,21 @@
-Description: Fix UnboundLocalError for logger.
- Attempt to avoid unbound local and unbounded recursion errors when
- initialising the logger.
- .
- moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
- .
-   * Initial release.
-Author: Paul Boddie <paul@boddie.org.uk>
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Tue, 15 Aug 2023 23:50:33 +0200
+Subject: Fix UnboundLocalError for logger.
 
+Attempt to avoid unbound local and unbounded recursion errors when
+initialising the logger.
+
+moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
+
+  * Initial release.
 ---
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
+ src/moin/log.py | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: https://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: 2022-07-03
-
---- moin-2.0.orig/src/moin/log.py
-+++ moin-2.0/src/moin/log.py
+diff --git a/src/moin/log.py b/src/moin/log.py
+index 5a6c76f..c06a7f7 100644
+--- a/src/moin/log.py
++++ b/src/moin/log.py
 @@ -120,6 +120,9 @@ def load_config(conf_fname=None):
      """ load logging config from conffile """
      global configured

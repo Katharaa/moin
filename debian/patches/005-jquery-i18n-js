@@ -1,26 +1,23 @@
-Description: Updated jQuery-i18n sources
- Updated and added the original jQuery-i18n source.
- .
- moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
- .
-   * Initial release.
-Author: Paul Boddie <paul@boddie.org.uk>
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Tue, 15 Aug 2023 23:50:33 +0200
+Subject: Updated jQuery-i18n sources
 
+Updated and added the original jQuery-i18n source.
+
+moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
+
+  * Initial release.
 ---
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
+ src/moin/static/js/jquery.i18n.js     | 120 ++++++++++++++++++++++++++++++++++
+ src/moin/static/js/jquery.i18n.min.js |  14 +---
+ 2 files changed, 121 insertions(+), 13 deletions(-)
+ create mode 100644 src/moin/static/js/jquery.i18n.js
 
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: https://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: 2022-07-04
-
+diff --git a/src/moin/static/js/jquery.i18n.js b/src/moin/static/js/jquery.i18n.js
+new file mode 100644
+index 0000000..33c5109
 --- /dev/null
-+++ moin-2.0/src/moin/static/js/jquery.i18n.js
++++ b/src/moin/static/js/jquery.i18n.js
 @@ -0,0 +1,120 @@
 +/*!
 + * jQuery i18n plugin
@@ -142,8 +139,10 @@ Last-Update: 2022-07-04
 +
 +  $.i18n = i18n;
 +})(jQuery);
---- moin-2.0.orig/src/moin/static/js/jquery.i18n.min.js
-+++ moin-2.0/src/moin/static/js/jquery.i18n.min.js
+diff --git a/src/moin/static/js/jquery.i18n.min.js b/src/moin/static/js/jquery.i18n.min.js
+index 2a8e6ed..27be0b9 100644
+--- a/src/moin/static/js/jquery.i18n.min.js
++++ b/src/moin/static/js/jquery.i18n.min.js
 @@ -1,13 +1 @@
 -/*
 - * jQuery i18n plugin

@@ -1,28 +1,22 @@
-Description: Fix package data installation.
- The provided package_data settings for static data and themes are
- insufficient and will not copy the data. A function has been introduced
- to identify the data files in each location.
- .
- moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
- .
-   * Initial release.
-Author: Paul Boddie <paul@boddie.org.uk>
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Tue, 15 Aug 2023 23:50:33 +0200
+Subject: Fix package data installation.
 
+The provided package_data settings for static data and themes are
+insufficient and will not copy the data. A function has been introduced
+to identify the data files in each location.
+
+moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
+
+  * Initial release.
 ---
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
+ setup.py | 26 +++++++++++++++++---------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
 
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: https://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: 2022-09-26
-
---- moin-2.0.orig/setup.py
-+++ moin-2.0/setup.py
+diff --git a/setup.py b/setup.py
+index 9caab9f..7b637c9 100644
+--- a/setup.py
++++ b/setup.py
 @@ -5,6 +5,7 @@
  
  import os

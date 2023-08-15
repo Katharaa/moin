@@ -1,0 +1,32 @@
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Tue, 15 Aug 2023 23:52:17 +0200
+Subject: Search for namespace packages.
+
+Without searching for namespace packages, various directories are
+not apparently installed.
+---
+ setup.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/setup.py b/setup.py
+index 7b637c9..de7a701 100644
+--- a/setup.py
++++ b/setup.py
+@@ -4,7 +4,7 @@
+ # License: GNU GPL v2 (or any later version), see LICENSE.txt for details.
+ 
+ import os
+-from setuptools import setup, find_packages
++from setuptools import setup, find_namespace_packages
+ from glob import glob
+ 
+ 
+@@ -61,7 +61,7 @@ setup_args = dict(
+         "Topic :: Text Processing :: Markup",
+     ],
+ 
+-    packages=find_packages(where='src', exclude=['_tests', ]),
++    packages=find_namespace_packages(where='src', exclude=['_tests', ]),
+     package_dir={'': 'src'},
+ 
+     package_data={

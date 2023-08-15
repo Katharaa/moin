@@ -1,31 +1,27 @@
-Description: Fix Python packaging metadata.
- The Python packaging name for pdfminer may leak out into requires.txt
- files used by the Python import system, causing Python to refuse to
- look for the installed module/package despite it being present and
- readily discoverable. Various XStatic packages appear to have
- currently unavailable versions for Debian.
- .
- moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
- .
-   * Initial release.
-Author: Paul Boddie <paul@boddie.org.uk>
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Tue, 15 Aug 2023 23:50:33 +0200
+Subject: Fix Python packaging metadata.
 
+The Python packaging name for pdfminer may leak out into requires.txt
+files used by the Python import system, causing Python to refuse to
+look for the installed module/package despite it being present and
+readily discoverable. Various XStatic packages appear to have
+currently unavailable versions for Debian.
+
+moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
+
+  * Initial release.
 ---
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
+ setup.py | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: https://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: 2022-09-26
-
---- moin-2.0.orig/setup.py
-+++ moin-2.0/setup.py
-@@ -86,18 +86,15 @@ setup_args = dict(
+diff --git a/setup.py b/setup.py
+index 8f640da..a095656 100644
+--- a/setup.py
++++ b/setup.py
+@@ -84,20 +84,17 @@ setup_args = dict(
+         'pygments>=1.4',  # src code / text file highlighting
+         'Werkzeug<2.4.0',  # wsgi toolkit
          'whoosh>=2.7.0',  # needed for indexed search
 -        'pdfminer3',  # pdf -> text/plain conversion
 +        'pdfminer.six',  # pdf -> text/plain conversion

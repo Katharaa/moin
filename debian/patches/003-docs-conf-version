@@ -1,28 +1,22 @@
-Description: Use explicit version string.
- Instead of using package introspection to discover the version, just use
- an explicit version string.
- .
- moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
- .
-   * Initial release.
-Author: Paul Boddie <paul@boddie.org.uk>
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Tue, 15 Aug 2023 23:50:33 +0200
+Subject: Use explicit version string.
 
+Instead of using package introspection to discover the version, just use
+an explicit version string.
+
+moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
+
+  * Initial release.
 ---
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
+ docs/conf.py | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: https://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: 2022-07-04
-
---- moin-2.0.orig/docs/conf.py
-+++ moin-2.0/docs/conf.py
-@@ -51,11 +51,10 @@ copyright = '2011-2022, The MoinMoin dev
+diff --git a/docs/conf.py b/docs/conf.py
+index fe7aa8e..ba9fc0d 100644
+--- a/docs/conf.py
++++ b/docs/conf.py
+@@ -52,11 +52,10 @@ copyright = '2011-2022, The MoinMoin developers'
  # |version| and |release|, also used in various other places throughout the
  # built documents.
  #

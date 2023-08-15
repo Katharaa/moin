@@ -1,28 +1,22 @@
-Description: Removed SVG and wikidraw from wikiconfig.
- The drawing-related modules are not yet packaged and should be optional,
- anyway, so this patch comments them out in the wikiconfig.
- .
- moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
- .
-   * Initial release.
-Author: Paul Boddie <paul@boddie.org.uk>
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Tue, 15 Aug 2023 23:50:33 +0200
+Subject: Removed SVG and wikidraw from wikiconfig.
 
+The drawing-related modules are not yet packaged and should be optional,
+anyway, so this patch comments them out in the wikiconfig.
+
+moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
+
+  * Initial release.
 ---
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
+ src/moin/config/wikiconfig.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: https://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: 2022-09-26
-
---- moin-2.0.orig/src/moin/config/wikiconfig.py
-+++ moin-2.0/src/moin/config/wikiconfig.py
-@@ -151,7 +151,7 @@ class Config(DefaultConfig):
+diff --git a/src/moin/config/wikiconfig.py b/src/moin/config/wikiconfig.py
+index 470508c..dc2f430 100644
+--- a/src/moin/config/wikiconfig.py
++++ b/src/moin/config/wikiconfig.py
+@@ -153,7 +153,7 @@ class Config(DefaultConfig):
          'font_awesome',
          'ckeditor',
          'autosize',

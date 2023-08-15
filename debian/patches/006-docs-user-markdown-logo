@@ -1,29 +1,23 @@
-Description: Removed remote site reference for logo.
- Although the documentation demonstrates remote logo referencing, this is
- regarded as a privacy violation in Debian. To ensure that the example is
- still illustrative, a local version of the logo is used instead in the
- actual markup that is converted to HTML.
- .
- moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
- .
-   * Initial release.
-Author: Paul Boddie <paul@boddie.org.uk>
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Tue, 15 Aug 2023 23:50:33 +0200
+Subject: Removed remote site reference for logo.
 
+Although the documentation demonstrates remote logo referencing, this is
+regarded as a privacy violation in Debian. To ensure that the example is
+still illustrative, a local version of the logo is used instead in the
+actual markup that is converted to HTML.
+
+moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
+
+  * Initial release.
 ---
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
+ docs/user/markdown.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: https://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: 2022-09-26
-
---- moin-2.0.orig/docs/user/markdown.rst
-+++ moin-2.0/docs/user/markdown.rst
+diff --git a/docs/user/markdown.rst b/docs/user/markdown.rst
+index a43a676..dab51a4 100644
+--- a/docs/user/markdown.rst
++++ b/docs/user/markdown.rst
 @@ -424,7 +424,7 @@ do not appear in the rendered HTML:
  
  To transclude image from remote site:
