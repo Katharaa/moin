@@ -75,7 +75,7 @@ setup_args = dict(
         'blinker>=1.1',  # event signalling (e.g. for change notification trigger)
         'docutils>=0.18.1',  # reST markup processing
         'Markdown>=3.4.1',  # Markdown markup processing
-        'Flask<2.1.0',  # micro framework
+        'Flask<2.3.0',  # micro framework
         'Flask-Babel<3.0.0',  # i18n support
         'Flask-Caching>=1.2.0',  # caching support
         'Flask-Theme>=0.3.5',  # theme support
@@ -85,7 +85,7 @@ setup_args = dict(
         'Jinja2<3.1.0',  # template engine
         'markupsafe<=2.2.0',  # safe html and xml
         'pygments>=1.4',  # src code / text file highlighting
-        'Werkzeug>=2.2.3',  # wsgi toolkit
+        'Werkzeug<2.4.0',  # wsgi toolkit
         'whoosh>=2.7.0',  # needed for indexed search
         'pdfminer3',  # pdf -> text/plain conversion
         'passlib>=1.6.0',  # strong password hashing (1.6 needed for consteq)
@@ -121,8 +121,8 @@ setup_args = dict(
     message_extractors={
         'src': [
             ('moin/templates/**.html', 'jinja2', None),
-            ('moin/templates/dictionary.js', 'javascript', None),  # all JS translatable strings must be
-                                                                   # defined here for jQuery i18n plugin
+            ('moin/templates/dictionary.js', 'jinja2', None),  # all JS translatable strings must be
+                                                               # defined here for jQuery i18n plugin
             ('moin/apps/**/templates/**.html', 'jinja2', None),
             ('moin/themes/**/templates/**.html', 'jinja2', None),
             ('moin/**/_tests/**', 'ignore', None),

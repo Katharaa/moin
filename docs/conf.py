@@ -29,6 +29,7 @@ import sys, os
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.autosummary',
               'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.viewcode',
               'sphinx.ext.graphviz', 'sphinx.ext.inheritance_diagram',
+              'sphinx_rtd_theme',
              ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -130,12 +131,12 @@ html_style = 'custom.css'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'Logo_MoinMoin.png'
+html_logo = '_static/Logo_MoinMoin.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = 'favicon.ico'
+html_favicon = '_static/favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -261,7 +262,7 @@ inheritance_graph_attrs = dict(rankdir="LR", size='"12.0, 16.0"',
 inheritance_node_attrs = dict(shape='box', fontsize=20, height=0.75,
                               color='yellow', style='filled')
 
-autosummary_generate = False
+autosummary_generate = True
 
 # -- Options for Linkcheck -----------------------------------------------------
 

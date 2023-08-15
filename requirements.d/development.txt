@@ -1,4 +1,7 @@
 tox
+psutil
 pytest
 # we use lxml.etree for xpath-based testing
 lxml
+# for sitetesting
+scrapy

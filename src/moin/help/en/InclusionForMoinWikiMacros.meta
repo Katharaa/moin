@@ -1,0 +1,25 @@
+{
+  "action": "SAVE",
+  "address": "127.0.0.1",
+  "comment": "",
+  "contenttype": "text/x.moin.wiki;charset=utf-8",
+  "dataid": "8f5bd70336ff45ed91161c28741593f9",
+  "externallinks": [],
+  "itemid": "bedcc6a3066b4d959fae305c09b5e244",
+  "itemlinks": [],
+  "itemtransclusions": [],
+  "itemtype": "default",
+  "mtime": 1681742391,
+  "name": [
+    "InclusionForMoinWikiMacros"
+  ],
+  "name_old": [],
+  "namespace": "help-en",
+  "rev_number": 1,
+  "revid": "773d7fe34c3b4284a42e2f037a013e60",
+  "sha1": "83b728a980bbc551debb55bcec1cc791c0d2153f",
+  "size": 83,
+  "summary": "",
+  "tags": [],
+  "wikiname": "MyMoinMoin"
+}

@@ -30,12 +30,22 @@ def cli():
               help='use the temporary location.')
 @click.option('-i', '--index-create', is_flag=True, required=False, default=False, help='(deprecated)')
 @click.option('-s', '--storage-create', is_flag=True, required=False, default=False, help='(deprecated)')
-@click.pass_context
-def IndexCreate(ctx, tmp, index_create, storage_create):
+def cli_IndexCreate(tmp, index_create, storage_create):
+    if index_create:
+        logging.info("options -i or --index-create are obsolete and will be ignored")
+    if storage_create:
+        logging.info("options -s or --storage-create are obsolete and will be ignored")
     logging.info("Index creation started")
-    logging.debug("index_create: %s, storage_create: %s", index_create, storage_create)
-    logging.debug("ctx.info_name: %s, ctx.params: %s", str(ctx.info_name), str(ctx.params))
+    return IndexCreate(tmp=tmp)
+
+
+def IndexCreate(**kwargs):
+    """
+    Create empty indexes
+    """
+    logging.info("Index creation started")
     init_backends(app, create_backend=True)
+    tmp = kwargs.get('tmp')
     app.storage.create(tmp=tmp)
     logging.info("Index creation finished")
 
@@ -81,7 +91,14 @@ def IndexMove():
 
 @cli.command('index-optimize', help='Optimize the indexes')
 @click.option('--tmp', is_flag=True, required=False, default=False, help='use the temporary location.')
+def cli_IndexOptimize(tmp):
+    return IndexOptimize(tmp)
+
+
 def IndexOptimize(tmp):
+    """
+    Optimize the indexes
+    """
     logging.info("Index optimization started")
     app.storage.optimize_index(tmp=tmp)
     logging.info("Index optimization finished")
@@ -89,12 +106,16 @@ def IndexOptimize(tmp):
 
 @cli.command('index-dump', help='Dump the indexes in readable form to stdout')
 @click.option('--tmp', is_flag=True, required=False, default=False, help='use the temporary location.')
-def IndexDump(tmp):
+@click.option('--truncate/--no-truncate', default=True, help='truncate long entries')
+def IndexDump(tmp, truncate):
     logging.info("Index dump started")
     for idx_name in [LATEST_REVS, ALL_REVS]:
         print(" {0} {1} {2}".format("-" * 10, idx_name, "-" * 60))
         for kvs in app.storage.dump(tmp=tmp, idx_name=idx_name):
             for k, v in kvs:
-                print(k, repr(v)[:70])
+                v = repr(v)
+                if truncate:
+                    v = v[:70]
+                print(k, v)
             print()
     logging.info("Index dump finished")

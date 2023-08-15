@@ -1,6 +1,7 @@
 # Copyright: 2005 MoinMoin:NirSoffer
 # Copyright: 2007 MoinMoin:AlexanderSchremmer
 # Copyright: 2008,2011 MoinMoin:ThomasWaldmann
+# Copyright: 2023 MoinMoin project
 # License: GNU GPL v2 (or any later version), see LICENSE.txt for details.
 
 """
@@ -21,7 +22,7 @@ import py
 import moin.log
 import moin
 from moin.app import create_app_ext, destroy_app, before_wiki, teardown_wiki
-from moin._tests import wikiconfig
+from moin._tests import wikiconfig, get_open_wiki_files
 from moin.storage import create_simple_mapping
 
 
@@ -43,7 +44,7 @@ def cfg():
     return wikiconfig.Config
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def app_ctx(cfg):
     namespace_mapping, backend_mapping, acl_mapping = create_simple_mapping(
         "stores:memory:",
@@ -53,11 +54,8 @@ def app_ctx(cfg):
         namespace_mapping=namespace_mapping,
         backend_mapping=backend_mapping,
         acl_mapping=acl_mapping,
-        create_storage=True,  # create a fresh storage at each app start
-        destroy_storage=True,  # kill all storage contents at app shutdown
-        create_index=True,  # create a fresh index at each app start
-        destroy_index=True,  # kill index contents at app shutdown
-        create_backend=True,  # create backend storage
+        create_backend=True,  # create backend storage and index
+        destroy_backend=True,  # remove index and storage at app shutdown
     )
     app = create_app_ext(
         flask_config_dict=dict(SECRET_KEY='foobarfoobar'),
@@ -72,7 +70,12 @@ def app_ctx(cfg):
 
     teardown_wiki('')
     ctx.pop()
-    destroy_app(app)
+    try:
+        # simulate ERROR PermissionError:
+        # [WinError 32] The process cannot access the file because it is being used by another process
+        assert [] == get_open_wiki_files()
+    finally:
+        destroy_app(app)
 
 
 @pytest.fixture(autouse=True)

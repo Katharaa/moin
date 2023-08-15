@@ -3,14 +3,8 @@ Markdown Syntax
 
 This page introduces you to the most important elements of the Markdown syntax. For details on the Python implementation of Markdown see <https://python-markdown.github.io/>.
 
-In addition to being supported by moin2, the Markdown markup language is used by issue trackers
-such as those found in Github. So what you learn here can be used to create or
-edit issues on the [moin issue tracker](https://github.com/moinwiki/moin/issues).
-
-If there are error messages on the top of this page they are the result of [examples showing unsupported HTML tags](markdown#unsupported-html-tags). The error messages will not be present if this item has been served from cache; to see the messages click Modify and Save.
+If there are error messages on the top of this page they are the result of [examples showing unsupported HTML tags](#Unsupported_HTML_Tags). The error messages will not be present if this item has been served from cache.
 {: #para3 }
-
-Features currently not working with moin's Markdown parser are marked with **MDTODO**.
 
 Table of Contents
 -----------------
@@ -58,6 +52,18 @@ Heading levels 3 through 6 must be defined by prefixing the heading with a varia
 
 **Result:**
 
+Level 1
+{: .h1}
+
+Level 1
+{: .h1}
+
+Level 2
+{: .h2}
+
+Level 2
+{: .h2}
+
 ### Level 3
 
 #### Level 4
@@ -66,10 +72,8 @@ Heading levels 3 through 6 must be defined by prefixing the heading with a varia
 
 ###### Level 6 ######
 
-**NOTE**: Levels 1 and 2 are not shown above to avoid adding
-unwanted entries to the table of contents. See the top of this page
-for an approximate view of a level 1 heading and next section heading
-below for level 2.
+**NOTE**: The "Level 1" and "level 2" headings above are styled with CSS to appear as headings
+but not complicate the table of contents. 
 
 Preformatted Code
 -----------------
@@ -112,16 +116,14 @@ End preformatted code
 Paragraphs are separated
 by a blank line.
 
-To force a line break, end a line
+To force a line break, end a line  
 with 2 spaces.
 
 ----
 
 Markdown provides markup for only a few common text augmentations. Less common
 augmentations may be obtained by using HTML tags. See
-[support for inline HTML](markdown#inline-html). Note support for HTML tags
-on other implementations of Markdown such as GitHub and BitBucket is both limited
-and variable.
+[support for inline HTML](help-en/markdown#inline-html).
 
 |**Markup**|**Result**|
 |----------|----------|
@@ -141,18 +143,14 @@ and variable.
 
 Markdown supports two style of links: inline and reference.
 
+Note this item is in the "help-en" namespace. Within markdown link syntax, namespaces are processed like ordinary parent items.
+
 ### Inline Links
 
-
-The examples below are dependent upon the use of the "help-en" namespace to separate help items from the main wiki content. Some target items may be missing from the default or users namespace.
-
-Within markdown link syntax, namespaces are processed like ordinary parent items:
-
- * a simple link like `[Sibling]` links to a sibling of the current item
- * a link beginning with / like `[/rootitem]` links an item in the default namespace root
- * a relative link like [`../Home]` links to a sibling of a parent item
- * a link that begins with a namespace like `[users/Home]` links to an item in that namespace
-
+ * a simple link like `[default Home](Home)` links to an item in the default namespace
+ * a link beginning with ../ like `[my home](../Home)` links to a sibling in the current namespace
+ * a link that begins with a namespace like `[users Home](users/Home)` links to the Home item in the target namespace
+ * a link that begins with / like `[my Subitem](/Subitem)` links to a subitem of the current item
 
 Inline links use the form:
 
@@ -160,16 +158,18 @@ Inline links use the form:
 
 |**Markup**|**Result**|
 |----------|----------|
-|`[sibling item](Sibling)`|[sibling item](Sibling)|
-|`[link to item in users namespace](../users/Home)`|[link to item in users namespace](../users/Home)|
-|`[link to item in default namespace](/Home)`|[link to item in default namespace](/Home)|
-|`[toc](markdown#table-of-contents)`|[toc](markdown#table-of-contents)|
-|`[toc](#table-of-contents)`|[toc](#table-of-contents)|
+|`[Home](Home)`|[Home](Home) # Home item in default namespace|
+|`[help-en/Home](help-en/Home)`|[help-en/Home](help-en/Home) # Home item in help-en namespace|
+|`[../Home](../Home)`|[../Home](../Home) # sibling link to Home item in help-en namespace|
+|`[../MissingSibling](../MissingSibling)`|[../MissingSibling](../MissingSibling) # missing sibling link|
+|`[creole is a sibling](../creole)`|[creole is a sibling](../creole)|
+|`[toc](#Table_of_Contents)`|[toc](#Table_of_Contents) # link to anchor; case-sensitive, blanks replaced with _|
 |`[moinmoin](https://moinmo.in "Go there")`|[moinmoin](https://moinmo.in "Go there")|
-|`[![Image name](../../help-common/logo.png)](Home "click me")`|[![Image name](../../help-common/logo.png)](Home "click me")|
+|`[![Image name](help-common/logo.png)](Home "click me")`|[![Image name](help-common/logo.png)](Home "click me") # fancy link using a logo, see Images (Transclusions)|
+|`[write me](mailto:joe@doe.com "now")`|[write me](mailto:joe@doe.com "now")|
 
 ### Reference Links
-Reference links have two parts. Somewhere in the document the link label is defined using a unique id; this has no visible output. Then the reference link uses a form with square brackets rather than parens:
+Reference links have two parts. Somewhere in the document the link id is defined using a unique name; this has no visible output. Then a reference link has the id within brackets after the link text:
 
     [id]: url "optional title"
 
@@ -185,16 +185,20 @@ Reference links have two parts. Somewhere in the document the link label is defi
 [apple]: https://www.apple.com/
 [MoinMoin]: https://moinmo.in/ "go there!"
 
-## Images
+## Images and Transclusions
 
-Images are similar to links with both an inline and a reference style, but they start with an exclamation point. There are no options to change the default sizes or positions (float left) of images:
+Images and transclusions are similar to links with both an inline and a reference style,
+but they start with an exclamation point character. The target image or item is inserted
+into the rendered page. 
 
 |**Markup**|**Result**|
 |----------|----------|
 |`![Alt text](help-common/logo.png "Optional title")`|![Alt text](help-common/logo.png "Optional title")|
 |`![remote image](http://static.moinmo.in/logos/moinmoin.png)`|![remote image](http://static.moinmo.in/logos/moinmoin.png)|
-|`[1]: help-common/logo.png`|to define a reference link place text on separate line, it creates no visible output, example below uses this|
-|`![Alt text](1)`|![Alt text][1]|
+|`[1]: help-common/logo.png`|# to define a reference link place declaration on a separate line, it creates no visible output, the example below uses this|
+|`![Alt text][1]`|![Alt text][1]|
+|`![Subitem content](/Subitem)`|![Subitem content](/Subitem) # content of subitem is rendered\
+|`![video](help-common/video.mp4)`|![video](help-common/video.mp4) # transcluded video|
 
 [1]: help-common/logo.png  "Optional title attribute"
 
@@ -313,9 +317,7 @@ Putting spaces between the characters also works.
 
 ______
 
-
 ## Backslash Escapes
-
 
 Sometimes there is a need to use special characters as literal characters, but Markdown's syntax gets in the way.  Use the backslash character as an escape.
 
@@ -350,7 +352,6 @@ Advanced blockquotes with nesting are created by starting a line with a > charac
     > A standard blockquote is indented
     > > A nested blockquote is indented more
     > > > You can nest to any depth.
-
 
 **Result:**
 
@@ -419,7 +420,7 @@ This word is <strong style="color:red;background-color:yellow">bold</strong>; co
 
 <img alt="Alt text" src="/+get/help-common/logo.png" title="Optional title" />
 
-**Note:** See top of [html](html) and configuration docs for information on allow_style_attributes.
+**Note:** See top of [html](../html) and configuration docs for information on allow_style_attributes.
 
 ### Unsupported HTML Tags
 
@@ -460,7 +461,6 @@ End of paragraph.
 ## Extensions
 
 In addition to the TOC extension shown near the top of this page, the following features are installed as part of the "extras" extension.
-
 
 ### Tables
 

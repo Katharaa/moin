@@ -78,14 +78,14 @@ to include a leading namespace will fail.
 
 - - - - end of <Include(^archive)> - - - -
 
-Include a page with a non-ascii name and a heading level 6 inside a comment. Click the "Comments"
+Include a page with a heading level 6 inside a comment. Click the "Comments"
 link inside Item Views to show/hide the inclusion.
 
 {{{{#!wiki comment/dashed
-<<Include(help-en/StronaGłówna,My Favorite Page, 6)>>
+<<Include(help-en/InclusionForMoinWikiMacros,My Favorite Page, 6)>>
 }}}}
 
-- - - - end of <Include(help-en/StronaGłówna,My Favorite Page, 6)> - - - -
+- - - - end of <Include(help-en/InclusionForMoinWikiMacros,My Favorite Page, 6)> - - - -
 }}}
 
 '''Result:'''
@@ -104,14 +104,14 @@ to include a leading namespace will fail.
 
 - - - - end of <Include(^archive)> - - - -
 
-Include a page with a non-ascii name and a heading level 6 inside a comment. Click the "Comments"
+Include a page and a heading level 6 inside a comment. Click the "Comments"
 link inside Item Views to show/hide the inclusion.
 
 {{{{#!wiki comment/dashed
-<<Include(help-en/StronaGłówna,My Favorite Page, 6)>>
+<<Include(help-en/InclusionForMoinWikiMacros,My Favorite Page, 6)>>
 }}}}
 
-- - - - end of <Include(help-en/StronaGłówna,My Favorite Page, 6)> - - - -
+- - - - end of <Include(help-en/InclusionForMoinWikiMacros,My Favorite Page, 6)> - - - -
 
 '''MOINTODO:''' Some of the moin 1.9 parameters documented in [[https://moinmo.in/HelpOnMacros/Include]] are not supported. These include: from, to, sort, items, skipitems, titlesonly, and editlink.
 
@@ -119,7 +119,7 @@ link inside Item Views to show/hide the inclusion.
 
 === Anchor ===
 
-Anchors are created (but invisible of course). Click [[MoinWikiMacros#anchorname|here]] to scroll the window to the anchor following '''Result''' below.
+Anchors are created (but invisible of course). Click [[#anchorname|here]] to scroll the window to the anchor following '''Result''' below.
 
 '''Markup:'''
 

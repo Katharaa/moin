@@ -15,6 +15,7 @@ from flask.cli import FlaskGroup
 
 from moin.storage.middleware.serialization import serialize, deserialize
 from moin.app import create_app
+from moin.cli._util import get_backends
 
 from moin import log
 logging = log.getLogger(__name__)
@@ -52,31 +53,20 @@ def open_file(filename, mode):
               help='Filename of the output file.')
 @click.option('--backends', '-b', type=str, required=False,
               help='Backend names to serialize (comma separated).')
-@click.option('--all-backends', '-a', default=False,
+@click.option('--all-backends', '-a', is_flag=True,
               help='Serialize all configured backends.')
 def Serialize(file=None, backends=None, all_backends=False):
     logging.info("Backup started")
     if file is None:
-        f = sys.stdout
+        f = sys.stdout.buffer
     else:
         f = open(file, "wb")
     with f as f:
-        existing_backends = set(app.cfg.backend_mapping)
-        if all_backends:
-            backends = set(app.cfg.backend_mapping)
-        elif backends:
-            backends = set(backends.split(','))
-        if backends:
+        backends = get_backends(backends, all_backends)
+        for backend in backends:
             # low level - directly serialize some backend contents -
             # this does not use the index:
-            if backends.issubset(existing_backends):
-                for backend_name in backends:
-                    backend = app.cfg.backend_mapping.get(backend_name)
-                    serialize(backend, f)
-            else:
-                print("Error: Wrong backend name given.")
-                print("Given Backends: %r" % backends)
-                print("Configured Backends: %r" % existing_backends)
+            serialize(backend, f)
     logging.info("Backup finished")
 
 
