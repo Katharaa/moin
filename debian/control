@@ -23,10 +23,12 @@ Build-Depends:
  python3-markdown,
  python3-passlib,
  python3-pdfminer,
+ python3-psutil,
  python3-pygments,
  python3-sqlalchemy,
  python3-werkzeug,
- python3-whoosh
+ python3-whoosh,
+ python3-xstatic
 Standards-Version: 3.9.5
 Homepage: http://moinmo.in/
 Testsuite: autopkgtest-pkg-python
