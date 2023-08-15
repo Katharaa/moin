@@ -25,9 +25,7 @@ Last-Update: 2022-09-26
 
 --- moin-2.0.orig/setup.py
 +++ moin-2.0/setup.py
-@@ -85,20 +85,17 @@ setup_args = dict(
-         'pygments>=1.4',  # src code / text file highlighting
-         'Werkzeug>=2.2.3',  # wsgi toolkit
+@@ -86,18 +86,15 @@ setup_args = dict(
          'whoosh>=2.7.0',  # needed for indexed search
 -        'pdfminer3',  # pdf -> text/plain conversion
 +        'pdfminer.six',  # pdf -> text/plain conversion
