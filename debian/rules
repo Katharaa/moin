@@ -13,6 +13,4 @@ override_dh_auto_build:
 	PYTHONPATH=. python3 -m sphinx -N -bman -d _doctrees docs build/man
 
 override_dh_auto_test:
-	echo $(CURDIR)
-	ls $(CURDIR)/src/moin
 	SRC_MOIN_TESTS=$(CURDIR)/src/moin/_tests dh_auto_test
