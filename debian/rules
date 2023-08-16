@@ -2,6 +2,10 @@
 
 export PYBUILD_NAME=moin
 
+# Leave the testing to autopkgtest (see debian/test).
+
+export PYBUILD_DISABLE=test
+
 %:
 	dh $@ --with python3,sphinxdoc --buildsystem pybuild
 
@@ -11,6 +15,3 @@ override_dh_auto_build:
 	dh_auto_build
 	PYTHONPATH=. python3 -m sphinx -N -bhtml -d _doctrees docs build/html
 	PYTHONPATH=. python3 -m sphinx -N -bman -d _doctrees docs build/man
-
-override_dh_auto_test:
-	SRC_MOIN_TESTS=$(CURDIR)/src/moin/_tests dh_auto_test

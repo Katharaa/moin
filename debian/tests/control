@@ -1,0 +1,3 @@
+Tests: testsuite
+Depends: @, python3-psutil, python3-scrapy, python3-lxml, python3-pytest, python3-tox
+Restrictions: allow-stderr
