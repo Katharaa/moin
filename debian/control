@@ -60,6 +60,7 @@ Depends:
  python3-xstatic-jquery-file-upload,
  python3-xstatic-jquery.tablesorter,
  python3-xstatic-pygments,
+ node-normalize.css,
  ${misc:Depends},
  ${python3:Depends},
  ${sphinxdoc:Depends}
