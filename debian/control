@@ -11,22 +11,7 @@ Build-Depends:
  python3-sphinx,
  python3-sphinx-rtd-theme,
  graphviz,
- python3-pytest,
- python3-docutils,
- python3-emeraldtree,
- python3-feedgen,
- python3-flask,
- python3-flask-babel,
- python3-flask-caching,
- python3-flask-theme,
- python3-flatland,
- python3-markdown,
- python3-passlib,
- python3-pdfminer,
- python3-pygments,
- python3-sqlalchemy,
- python3-werkzeug,
- python3-whoosh
+ python3-docutils
 Standards-Version: 3.9.5
 Homepage: http://moinmo.in/
 

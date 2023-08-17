@@ -1,0 +1,9 @@
+flask_theme python3-flask-theme
+xstatic_bootstrap python3-xstatic-bootstrap
+xstatic_ckeditor python3-xstatic-ckeditor
+xstatic_pygments python3-xstatic-pygments
+xstatic_autosize python3-xstatic-autosize
+xstatic_jquery_file_upload python3-xstatic-jquery-file-upload
+emeraldtree python3-emeraldtree
+feedgen python3-feedgen
+flatland python3-flatland
