@@ -21,7 +21,7 @@ variables:
 
 .add-dependencies: &add-dependencies
   - |
-    cat >> ${SCI_LXC_PATH}/etc/apt/sources.list.d/new-packages-testing.list <<EOT
+    cat > ${TEST_APT_PATH}/sources.list.d/new-packages-testing.list <<EOT
     deb ${MOIN_TEAM_URL}/emeraldtree/-/jobs/${EMERALDTREE_JOBID}/${APTLY_URL_SUFFIX} unstable main
     deb ${MOIN_TEAM_URL}/feedgen/-/jobs/${FEEDGEN_JOBID}/${APTLY_URL_SUFFIX} unstable main
     deb ${MOIN_TEAM_URL}/flask-theme/-/jobs/${FLASK_THEME_JOBID}/${APTLY_URL_SUFFIX} unstable main
