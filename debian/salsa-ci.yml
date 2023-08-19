@@ -13,6 +13,6 @@ before_script:
   - echo "deb [trusted=yes] https://salsa.debian.org/moin-team/python-xstatic-autosize/-/jobs/4576472/artifacts/raw/aptly unstable main" | tee -a /etc/apt/sources.list.d/pkga.list
   - echo "deb [trusted=yes] https://salsa.debian.org/moin-team/python-xstatic-bootstrap/-/jobs/4576577/artifacts/raw/aptly unstable main" | tee -a /etc/apt/sources.list.d/pkga.list
   - echo "deb [trusted=yes] https://salsa.debian.org/moin-team/python-xstatic-ckeditor/-/jobs/4576527/artifacts/raw/aptly unstable main" | tee -a /etc/apt/sources.list.d/pkga.list
-  - echo "deb [trusted=yes] https://salsa.debian.org/moin-team/python-xstatic-jquery-file-upload/-/jobs/4576540/artifacts/raw/aptly unstable main" | -a tee /etc/apt/sources.list.d/pkga.list
+  - echo "deb [trusted=yes] https://salsa.debian.org/moin-team/python-xstatic-jquery-file-upload/-/jobs/4576540/artifacts/raw/aptly unstable main" | tee -a /etc/apt/sources.list.d/pkga.list
   - echo "deb [trusted=yes] https://salsa.debian.org/moin-team/python-xstatic-pygments/-/jobs/4576563/artifacts/raw/aptly unstable main" | tee -a /etc/apt/sources.list.d/pkga.list
   - apt-get update
