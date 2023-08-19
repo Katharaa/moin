@@ -4,7 +4,7 @@ include:
 
 variables:
   SALSA_CI_DISABLE_APTLY: 0
-  TEST_APT_PATH: ${CI_PROJECT_DIR}/lxc/etc/apt
+  TEST_APT_PATH: ${CI_PROJECT_DIR}/lxc/autopkgtest-${RELEASE}-amd64/rootfs/etc/apt
   GPG_TRUSTED_DIR: ${TEST_APT_PATH}/trusted.gpg.d
   MOIN_TEAM_URL: https://salsa.debian.org/moin-team
   APTLY_URL_SUFFIX: artifacts/raw/aptly
