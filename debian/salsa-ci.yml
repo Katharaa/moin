@@ -4,45 +4,43 @@ include:
 
 variables:
   SALSA_CI_DISABLE_APTLY: 0
+  TEST_APT_PATH: ${CI_PROJECT_DIR}/lxc/etc/apt
+  GPG_TRUSTED_DIR: ${TEST_APT_PATH}/trusted.gpg.d
+  MOIN_TEAM_URL: https://salsa.debian.org/moin-team
+  APTLY_URL_SUFFIX: artifacts/raw/aptly
+  PUBKEY_URL_SUFFIX: ${APTLY_URL_SUFFIX}/public-key.asc
+  EMERALDTREE_JOBID: 4575438
+  FEEDGEN_JOBID: 4575509
+  FLASK_THEME_JOBID: 4575496
+  FLATLAND_JOBID: 4576442
+  PYXS_AUTOSIZE_JOBID: 4576472
+  PYXS_BOOTSTRAP_JOBID: 4576577
+  PYXS_CKEDITOR_JOBID: 4576527
+  PYXS_JQFU_JOBID: 4576540
+  PYXS_PYGMENTS_JOBID: 4576563
 
 .add-dependencies: &add-dependencies
-  variables:
-    SCI_LXC_PATH: ${CI_PROJECT_DIR}/lxc
-    GPG_TRUSTED_DIR: ${SCI_LXC_PATH}/etc/apt/trusted.gpg.d
-    MOIN_TEAM_URL: https://salsa.debian.org/moin-team
-    APTLY_URL_SUFFIX: artifacts/raw/aptly
-    PUBKEY_URL_SUFFIX: ${APTLY_URL_SUFFIX}/public-key.asc
-    EMERALDTREE_JOBID: 4575438
-    FEEDGEN_JOBID: 4575509
-    FLASK_THEME_JOBID: 4575496
-    FLATLAND_JOBID: 4576442
-    PYXS_AUTOSIZE_JOBID: 4576472
-    PYXS_BOOTSTRAP_JOBID: 4576577
-    PYXS_CKEDITOR_JOBID: 4576527
-    PYXS_JQFU_JOBID: 4576540
-    PYXS_PYGMENTS_JOBID: 4576563
-  script:
-    - |
-      cat >> ${SCI_LXC_PATH}/etc/apt/sources.list.d/new-packages-testing.list <<EOT
-      deb ${MOIN_TEAM_URL}/emeraldtree/-/jobs/${EMERALDTREE_JOBID}/${APTLY_URL_SUFFIX} unstable main
-      deb ${MOIN_TEAM_URL}/feedgen/-/jobs/${FEEDGEN_JOBID}/${APTLY_URL_SUFFIX} unstable main
-      deb ${MOIN_TEAM_URL}/flask-theme/-/jobs/${FLASK_THEME_JOBID}/${APTLY_URL_SUFFIX} unstable main
-      deb ${MOIN_TEAM_URL}/flatland/-/jobs/${FLATLAND_JOBID}/${APTLY_URL_SUFFIX} unstable main
-      deb ${MOIN_TEAM_URL}/python-xstatic-autosize/-/jobs/${PYXS_AUTOSIZE_JOBID}/${APTLY_URL_SUFFIX} unstable main
-      deb ${MOIN_TEAM_URL}/python-xstatic-bootstrap/-/jobs/${PYXS_BOOTSTRAP_JOBID}/${APTLY_URL_SUFFIX} unstable main
-      deb ${MOIN_TEAM_URL}/python-xstatic-ckeditor/-/jobs/${PYXS_CKEDITOR_JOBID}/${APTLY_URL_SUFFIX} unstable main
-      deb ${MOIN_TEAM_URL}/python-xstatic-jquery-file-upload/-/jobs/${PYXS_JQFU_JOBID}/${APTLY_URL_SUFFIX} unstable main
-      deb ${MOIN_TEAM_URL}/python-xstatic-pygments/-/jobs/${PYXS_PYGMENTS_JOBID}/${APTLY_URL_SUFFIX} unstable main
-      EOT
-    - wget -q -O ${GPG_TRUSTED_DIR}/emeraldtree.asc ${MOIN_TEAM_URL}/emeraldtree/-/jobs/${EMERALDTREE_JOBID}/${PUBKEY_URL_SUFFIX}
-    - wget -q -O ${GPG_TRUSTED_DIR}/feedgen.asc ${MOIN_TEAM_URL}/feedgen/-/jobs/${FEEDGEN_JOBID}/${PUBKEY_URL_SUFFIX}
-    - wget -q -O ${GPG_TRUSTED_DIR}/flask-theme.asc ${MOIN_TEAM_URL}/flask-theme/-/jobs/${FLASK_THEME_JOBID}/${PUBKEY_URL_SUFFIX}
-    - wget -q -O ${GPG_TRUSTED_DIR}/flatland.asc ${MOIN_TEAM_URL}/flatland/-/jobs/${FLATLAND_JOBID}/${PUBKEY_URL_SUFFIX}
-    - wget -q -O ${GPG_TRUSTED_DIR}/python-xstatic-autosize.asc ${MOIN_TEAM_URL}/python-xstatic-autosize/-/jobs/${PYXS_AUTOSIZE_JOBID}/${PUBKEY_URL_SUFFIX}
-    - wget -q -O ${GPG_TRUSTED_DIR}/python-xstatic-bootstrap.asc ${MOIN_TEAM_URL}/python-xstatic-bootstrap/-/jobs/${PYXS_BOOTSTRAP_JOBID}/${PUBKEY_URL_SUFFIX}
-    - wget -q -O ${GPG_TRUSTED_DIR}/python-xstatic-ckeditor.asc ${MOIN_TEAM_URL}/python-xstatic-ckeditor/-/jobs/${PYXS_CKEDITOR_JOBID}/${PUBKEY_URL_SUFFIX}
-    - wget -q -O ${GPG_TRUSTED_DIR}/python-xstatic-jquery-file-upload.asc ${MOIN_TEAM_URL}/python-xstatic-jquery-file-upload/-/jobs/${PYXS_JQFU_JOBID}/${PUBKEY_URL_SUFFIX}
-    - wget -q -O ${GPG_TRUSTED_DIR}/python-xstatic-pygments.asc ${MOIN_TEAM_URL}/python-xstatic-pygments/-/jobs/${PYXS_PYGMENTS_JOBID}/${PUBKEY_URL_SUFFIX}
+  - |
+    cat >> ${SCI_LXC_PATH}/etc/apt/sources.list.d/new-packages-testing.list <<EOT
+    deb ${MOIN_TEAM_URL}/emeraldtree/-/jobs/${EMERALDTREE_JOBID}/${APTLY_URL_SUFFIX} unstable main
+    deb ${MOIN_TEAM_URL}/feedgen/-/jobs/${FEEDGEN_JOBID}/${APTLY_URL_SUFFIX} unstable main
+    deb ${MOIN_TEAM_URL}/flask-theme/-/jobs/${FLASK_THEME_JOBID}/${APTLY_URL_SUFFIX} unstable main
+    deb ${MOIN_TEAM_URL}/flatland/-/jobs/${FLATLAND_JOBID}/${APTLY_URL_SUFFIX} unstable main
+    deb ${MOIN_TEAM_URL}/python-xstatic-autosize/-/jobs/${PYXS_AUTOSIZE_JOBID}/${APTLY_URL_SUFFIX} unstable main
+    deb ${MOIN_TEAM_URL}/python-xstatic-bootstrap/-/jobs/${PYXS_BOOTSTRAP_JOBID}/${APTLY_URL_SUFFIX} unstable main
+    deb ${MOIN_TEAM_URL}/python-xstatic-ckeditor/-/jobs/${PYXS_CKEDITOR_JOBID}/${APTLY_URL_SUFFIX} unstable main
+    deb ${MOIN_TEAM_URL}/python-xstatic-jquery-file-upload/-/jobs/${PYXS_JQFU_JOBID}/${APTLY_URL_SUFFIX} unstable main
+    deb ${MOIN_TEAM_URL}/python-xstatic-pygments/-/jobs/${PYXS_PYGMENTS_JOBID}/${APTLY_URL_SUFFIX} unstable main
+    EOT
+  - wget -q -O ${GPG_TRUSTED_DIR}/emeraldtree.asc ${MOIN_TEAM_URL}/emeraldtree/-/jobs/${EMERALDTREE_JOBID}/${PUBKEY_URL_SUFFIX}
+  - wget -q -O ${GPG_TRUSTED_DIR}/feedgen.asc ${MOIN_TEAM_URL}/feedgen/-/jobs/${FEEDGEN_JOBID}/${PUBKEY_URL_SUFFIX}
+  - wget -q -O ${GPG_TRUSTED_DIR}/flask-theme.asc ${MOIN_TEAM_URL}/flask-theme/-/jobs/${FLASK_THEME_JOBID}/${PUBKEY_URL_SUFFIX}
+  - wget -q -O ${GPG_TRUSTED_DIR}/flatland.asc ${MOIN_TEAM_URL}/flatland/-/jobs/${FLATLAND_JOBID}/${PUBKEY_URL_SUFFIX}
+  - wget -q -O ${GPG_TRUSTED_DIR}/python-xstatic-autosize.asc ${MOIN_TEAM_URL}/python-xstatic-autosize/-/jobs/${PYXS_AUTOSIZE_JOBID}/${PUBKEY_URL_SUFFIX}
+  - wget -q -O ${GPG_TRUSTED_DIR}/python-xstatic-bootstrap.asc ${MOIN_TEAM_URL}/python-xstatic-bootstrap/-/jobs/${PYXS_BOOTSTRAP_JOBID}/${PUBKEY_URL_SUFFIX}
+  - wget -q -O ${GPG_TRUSTED_DIR}/python-xstatic-ckeditor.asc ${MOIN_TEAM_URL}/python-xstatic-ckeditor/-/jobs/${PYXS_CKEDITOR_JOBID}/${PUBKEY_URL_SUFFIX}
+  - wget -q -O ${GPG_TRUSTED_DIR}/python-xstatic-jquery-file-upload.asc ${MOIN_TEAM_URL}/python-xstatic-jquery-file-upload/-/jobs/${PYXS_JQFU_JOBID}/${PUBKEY_URL_SUFFIX}
+  - wget -q -O ${GPG_TRUSTED_DIR}/python-xstatic-pygments.asc ${MOIN_TEAM_URL}/python-xstatic-pygments/-/jobs/${PYXS_PYGMENTS_JOBID}/${PUBKEY_URL_SUFFIX}
 
 # From salsa-ci.yml and modified using the above.
 
