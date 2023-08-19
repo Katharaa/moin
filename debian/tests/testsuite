@@ -1,3 +1,7 @@
 #!/bin/sh
 
+# Obtain the installed _version.py file that is not inherently part of the
+# sources, being created dynamically by setuptools.
+
+cp /usr/lib/python3/dist-packages/moin/_version.py src/moin/
 pytest-3
