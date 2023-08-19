@@ -121,6 +121,7 @@ variables:
       -k "${SALSA_CI_EXTRA_REPOSITORY_KEY}" -t "${CHROOT_PATH}/etc-target"
     - *add-dependencies
     - mv new-packages-testing.list ${PIUPARTS_APT_PATH}/sources.list.d/new-packages-testing.list
+    - [ ! -e ${PIUPARTS_GPG_TRUSTED_DIR} ] && mkdir -p ${PIUPARTS_GPG_TRUSTED_DIR}
     - mv *.asc ${PIUPARTS_GPG_TRUSTED_DIR}
     - sed  '/127.0.0.1/s/localhost/pipeline.salsa.debian.org localhost/' /etc/hosts > ${CHROOT_PATH}/etc/hosts
     - PIUPARTS_DISTRIBUTION_ARG="--distribution $RELEASE"
