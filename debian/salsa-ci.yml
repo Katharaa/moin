@@ -6,6 +6,7 @@ variables:
   SALSA_CI_DISABLE_APTLY: 0
 
 before_script:
+  - apt-get install wget
   - echo "deb https://salsa.debian.org/moin-team/emeraldtree/-/jobs/4575438/artifacts/raw/aptly unstable main" | tee /etc/apt/sources.list.d/pkga.list
   - echo "deb https://salsa.debian.org/moin-team/feedgen/-/jobs/4575509/artifacts/raw/aptly unstable main" | tee -a /etc/apt/sources.list.d/pkga.list
   - echo "deb https://salsa.debian.org/moin-team/flask-theme/-/jobs/4575496/artifacts/raw/aptly unstable main" | tee -a /etc/apt/sources.list.d/pkga.list
