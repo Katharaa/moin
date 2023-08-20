@@ -6,5 +6,7 @@
 cp /usr/lib/python3/dist-packages/moin/_version.py src/moin/
 
 # Run the suite, but ignore the time-consuming, network-dependent Scrapy test.
+# Also ignore the .pc directory that may contain .pyc files for patched test
+# modules that somehow have the wrong __file__ module attribute values.
 
-pytest-3 --ignore=src/moin/cli/_tests/test_scrapy_crawl.py
+pytest-3 --ignore=src/moin/cli/_tests/test_scrapy_crawl.py --ignore=.pc
