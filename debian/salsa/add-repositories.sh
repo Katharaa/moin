@@ -70,6 +70,11 @@ get_public_key()
     wget -q -O "$1/$2.asc" ${TEAM_URL}/$2/-/jobs/$3/${PUBKEY_URL_SUFFIX}
 }
 
+# First, make sure that wget is available.
+
+apt-get update
+NON_INTERACTIVE=1 apt-get install -y wget
+
 # Obtain the package and job details, adding dependency details.
 
 add_dependencies "$APT_PATH"
