@@ -5,11 +5,6 @@
 
 cp /usr/lib/python3/dist-packages/moin/_version.py src/moin/
 
-# Remove __pycache__ files from the sources since any patches appear to cause
-# strange __file__ module attributes to be defined, which pytest dislikes.
-
-find src/moin -name __pycache__ | xargs rm -r
-
 # Run the suite, but ignore the time-consuming, network-dependent Scrapy test.
 
 pytest-3 --ignore=src/moin/cli/_tests/test_scrapy_crawl.py
