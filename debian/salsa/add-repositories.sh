@@ -15,11 +15,11 @@ emeraldtree 4575438
 feedgen 4575509
 flask-theme 4575496
 flatland 4576442
-python-xstatic-autosize 4576472
-python-xstatic-bootstrap 4576577
-python-xstatic-ckeditor 4576527
-python-xstatic-jquery-file-upload 4576540
-python-xstatic-pygments 4576563
+python-xstatic-autosize 4584347
+python-xstatic-bootstrap 4584383
+python-xstatic-ckeditor 4584370
+python-xstatic-jquery-file-upload 4584396
+python-xstatic-pygments 4584410
 '
 
 # Define repository location details for package dependencies.
