@@ -1,0 +1,35 @@
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Sun, 20 Aug 2023 18:56:07 +0200
+Subject: Use more conventional time zones.
+
+---
+ src/moin/macros/_tests/test_Date.py     | 2 +-
+ src/moin/utils/_tests/test_show_time.py | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/moin/macros/_tests/test_Date.py b/src/moin/macros/_tests/test_Date.py
+index 7e8f00a..83055e9 100644
+--- a/src/moin/macros/_tests/test_Date.py
++++ b/src/moin/macros/_tests/test_Date.py
+@@ -63,7 +63,7 @@ class TestMacro:
+         expected = '2023-08-07z'
+         assert result == expected
+ 
+-        flaskg.user.timezone = 'US/Arizona'
++        flaskg.user.timezone = 'America/Phoenix'
+         result = macro_obj.macro('content', arguments, 'page_url', 'alternative')
+         expected = '2023-08-07'
+         assert result == expected
+diff --git a/src/moin/utils/_tests/test_show_time.py b/src/moin/utils/_tests/test_show_time.py
+index 4af82df..bfbf929 100644
+--- a/src/moin/utils/_tests/test_show_time.py
++++ b/src/moin/utils/_tests/test_show_time.py
+@@ -57,7 +57,7 @@ class TestShowTime:
+         flaskg.user.valid = True
+         flaskg.user.locale = 'en'
+         flaskg.user.iso_8601 = False
+-        flaskg.user.timezone = 'US/Arizona'
++        flaskg.user.timezone = 'America/Phoenix'
+         formatted_date = show_time.format_date(utc_dt=0)
+         assert formatted_date == 'Dec 31, 1969'
+         formatted_time = show_time.format_time(utc_dt=0)
