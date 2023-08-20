@@ -34,7 +34,7 @@ PUBKEY_URL_SUFFIX="$APTLY_URL_SUFFIX/public-key.asc"
 
 add_dependencies()
 {
-    APT_LIST="$1/new-packages-testing.list"
+    APT_LIST="$1/sources.list.d/new-packages-testing.list"
     APT_GPG_TRUSTED_DIR="$1/trusted.gpg.d"
 
     # Create the configuration resources.
@@ -78,3 +78,4 @@ NON_INTERACTIVE=1 apt-get install -y wget
 # Obtain the package and job details, adding dependency details.
 
 add_dependencies "$APT_PATH"
+apt-get update
