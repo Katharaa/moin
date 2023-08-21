@@ -27,7 +27,7 @@ python-xstatic-pygments
 TEAM_URL="https://salsa.debian.org/moin-team"
 BRANCH="debian/master"
 APTLY_URL_SUFFIX="-/jobs/artifacts/${BRANCH}/raw/aptly?job=aptly"
-PUBKEY_URL_SUFFIX="$APTLY_URL_SUFFIX/public-key.asc"
+PUBKEY_URL_SUFFIX="public-key.asc"
 
 # Add dependency details to an apt configuration in the indicated directory.
 #
@@ -54,26 +54,35 @@ add_dependencies()
     # Add configuration entries and public keys for dependencies.
 
     for PACKAGE in $SALSA_PACKAGES_LIST ; do
-        cat >> "$APT_LIST" <<EOF
-deb ${TEAM_URL}/${PACKAGE}/${APTLY_URL_SUFFIX} unstable main
-EOF
-        get_public_key "$APT_GPG_TRUSTED_DIR" "$PACKAGE" "$JOBID"
+
+        # Handle redirects by obtaining the last URL fetched. This eliminates
+        # the need to enable redirects in apt.
+
+        START_URL="${TEAM_URL}/${PACKAGE}/${APTLY_URL_SUFFIX}"
+        URL=$(curl -s -L -I -w '%{url_effective}' -o /dev/null "$START_URL")
+
+        # Define the repository location.
+        # Generate an obvious failure if there is no appropriate repository.
+        # That will hopefully make troubleshooting easier when other jobs try
+        # and fetch from this non-existent repository.
+
+        if [ "$URL" = "$START_URL" ] ; then
+            echo "FAIL! $PACKAGE was not built successfully." >> "$APT_LIST"
+        else
+            echo "deb ${URL} unstable main" >> "$APT_LIST"
+
+            # Obtain the public key for the repository. Keep redirection
+            # support in place in case the server is doing something clever.
+
+            curl -s -L -o "${APT_GPG_TRUSTED_DIR}/${PACKAGE}.asc" "${URL}/${PUBKEY_URL_SUFFIX}"
+        fi
     done
 }
 
-# Fetch the public key for a package, storing it in the indicated directory.
-#
-# Usage: get_public_key <directory> <package name> <job identifier>
-
-get_public_key()
-{
-    wget -q -O "$1/$2.asc" ${TEAM_URL}/$2/-/jobs/$3/${PUBKEY_URL_SUFFIX}
-}
-
-# First, make sure that wget is available.
+# First, make sure that curl is available.
 
 apt-get update
-NON_INTERACTIVE=1 apt-get install -y wget
+NON_INTERACTIVE=1 apt-get install -y curl
 
 # Obtain the package and job details, adding dependency details.
 
