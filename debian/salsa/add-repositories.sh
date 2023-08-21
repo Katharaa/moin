@@ -7,25 +7,26 @@
 
 APT_PATH=${1:-"/etc/apt"}
 
-# The jobs list would preferably be separate, but this requires extra effort
+# The packages list would preferably be separate, but this requires extra effort
 # when setting up various environments.
 
-SALSA_JOBS_LIST='
-emeraldtree 4575438
-feedgen 4575509
-flask-theme 4575496
-flatland 4576442
-python-xstatic-autosize 4584347
-python-xstatic-bootstrap 4584383
-python-xstatic-ckeditor 4584370
-python-xstatic-jquery-file-upload 4584396
-python-xstatic-pygments 4584410
+SALSA_PACKAGES_LIST='
+emeraldtree
+feedgen
+flask-theme
+flatland
+python-xstatic-autosize
+python-xstatic-bootstrap
+python-xstatic-ckeditor
+python-xstatic-jquery-file-upload
+python-xstatic-pygments
 '
 
 # Define repository location details for package dependencies.
 
 TEAM_URL="https://salsa.debian.org/moin-team"
-APTLY_URL_SUFFIX="artifacts/raw/aptly"
+BRANCH="debian/master"
+APTLY_URL_SUFFIX="-/jobs/artifacts/${BRANCH}/raw/aptly?job=aptly"
 PUBKEY_URL_SUFFIX="$APTLY_URL_SUFFIX/public-key.asc"
 
 # Add dependency details to an apt configuration in the indicated directory.
@@ -34,10 +35,15 @@ PUBKEY_URL_SUFFIX="$APTLY_URL_SUFFIX/public-key.asc"
 
 add_dependencies()
 {
-    APT_LIST="$1/sources.list.d/new-packages-testing.list"
+    APT_SOURCES="$1/sources.list.d"
+    APT_LIST="${APT_SOURCES}/new-packages-testing.list"
     APT_GPG_TRUSTED_DIR="$1/trusted.gpg.d"
 
     # Create the configuration resources.
+
+    if [ ! -e "$APT_SOURCES" ] ; then
+        mkdir -p "$APT_SOURCES"
+    fi
 
     echo -n > "$APT_LIST"
 
@@ -45,17 +51,11 @@ add_dependencies()
         mkdir -p "$APT_GPG_TRUSTED_DIR"
     fi
 
-    # Extract the package and job identifier from the list.
+    # Add configuration entries and public keys for dependencies.
 
-    echo "$SALSA_JOBS_LIST" | while read PACKAGE JOBID ; do
-        if [ ! "$PACKAGE" ] ; then
-            continue
-        fi
-
-        # Add configuration entries and public keys.
-
+    for PACKAGE in $SALSA_PACKAGES_LIST ; do
         cat >> "$APT_LIST" <<EOF
-deb ${TEAM_URL}/${PACKAGE}/-/jobs/${JOBID}/${APTLY_URL_SUFFIX} unstable main
+deb ${TEAM_URL}/${PACKAGE}/${APTLY_URL_SUFFIX} unstable main
 EOF
         get_public_key "$APT_GPG_TRUSTED_DIR" "$PACKAGE" "$JOBID"
     done
@@ -78,4 +78,7 @@ NON_INTERACTIVE=1 apt-get install -y wget
 # Obtain the package and job details, adding dependency details.
 
 add_dependencies "$APT_PATH"
+
+# Update the repository records.
+
 apt-get update
