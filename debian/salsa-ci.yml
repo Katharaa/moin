@@ -16,3 +16,9 @@ piuparts:
   extends: .test-piuparts
   variables:
     SALSA_CI_PIUPARTS_PRE_INSTALL_SCRIPT: 'debian/salsa/add-repositories.sh'
+
+aptly:
+  extends: .publish-aptly
+  before_script:
+    - debian/salsa/add-repositories.sh
+    - debian/salsa/get-packages.sh "${WORKING_DIR}"
