@@ -3,10 +3,10 @@ Date: Sun, 10 Sep 2023 16:36:51 +0200
 Subject: Updated Flask-Babel API usage for 3.0.
 
 ---
- src/moin/apps/frontend/views.py   | 2 +-
- src/moin/i18n/__init__.py         | 6 ++----
- src/moin/i18n/_tests/test_i18n.py | 4 ++--
- 3 files changed, 5 insertions(+), 7 deletions(-)
+ src/moin/apps/frontend/views.py   |  2 +-
+ src/moin/i18n/__init__.py         | 12 +++++-------
+ src/moin/i18n/_tests/test_i18n.py |  4 ++--
+ 3 files changed, 8 insertions(+), 10 deletions(-)
 
 diff --git a/src/moin/apps/frontend/views.py b/src/moin/apps/frontend/views.py
 index 7f78ff5..19421c7 100644
@@ -22,7 +22,7 @@ index 7f78ff5..19421c7 100644
              ((str(locale), locale.display_name) for locale in _supported_locales), sort_by=1)
          submit_label = L_('Save')
 diff --git a/src/moin/i18n/__init__.py b/src/moin/i18n/__init__.py
-index babf4b5..acdfc89 100644
+index babf4b5..5b6410a 100644
 --- a/src/moin/i18n/__init__.py
 +++ b/src/moin/i18n/__init__.py
 @@ -32,9 +32,7 @@ L_ = lazy_gettext
@@ -45,6 +45,26 @@ index babf4b5..acdfc89 100644
          logging.debug("supported_locales = {0!r}".format(supported_locales))
          supported_languages = [str(locale) for locale in supported_locales]
          logging.debug("supported_languages = {0!r}".format(supported_languages))
+@@ -95,16 +93,16 @@ def force_locale(locale):
+         yield
+         return
+     babel = ctx.app.extensions['babel']
+-    orig_locale_selector_func = babel.locale_selector_func
++    orig_locale_selector = babel.locale_selector
+     orig_attrs = {}
+     for key in ('babel_translations', 'babel_locale'):
+         orig_attrs[key] = getattr(ctx, key, None)
+     try:
+-        babel.locale_selector_func = lambda: locale
++        babel.locale_selector = lambda: locale
+         for key in orig_attrs:
+             setattr(ctx, key, None)
+         yield
+     finally:
+-        babel.locale_selector_func = orig_locale_selector_func
++        babel.locale_selector = orig_locale_selector
+         for key, value in orig_attrs.items():
+             setattr(ctx, key, value)
 diff --git a/src/moin/i18n/_tests/test_i18n.py b/src/moin/i18n/_tests/test_i18n.py
 index 232e5a4..d9115cd 100644
 --- a/src/moin/i18n/_tests/test_i18n.py
