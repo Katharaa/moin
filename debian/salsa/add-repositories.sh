@@ -91,6 +91,7 @@ add_repositories()
             echo "FAIL! $PACKAGE was not built successfully." >> "$APT_LIST"
         else
             echo "deb ${URL} unstable main" >> "$APT_LIST"
+            echo "deb-src ${URL} unstable main" >> "$APT_LIST"
 
             # Obtain the public key for the repository. Keep redirection
             # support in place in case the server is doing something clever.
