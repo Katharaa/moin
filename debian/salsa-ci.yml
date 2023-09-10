@@ -20,7 +20,6 @@ piuparts:
 aptly:
   extends: .publish-aptly
   before_script:
-    - ls
     - debian/salsa/add-repositories.sh
     - debian/salsa/get-packages.sh "${WORKING_DIR}"
   variables:
