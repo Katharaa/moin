@@ -1,5 +1,12 @@
 #!/bin/sh
 
+# Using a list of packages, define a configuration for apt that allows the
+# listed packages to be obtained for installation.
+#
+# Usage: add-repositories.sh <apt base directory>
+
+APT_PATH=${1:-"/etc/apt"}
+
 # The packages list would preferably be separate, but this requires extra effort
 # when setting up various environments.
 
@@ -93,73 +100,15 @@ add_repositories()
     done
 }
 
-# Download packages into the current directory.
-#
-# Usage: get_packages
+# First, make sure that curl is available.
 
-get_packages()
-{
-    # Add configuration entries and public keys for dependencies.
+apt-get update
+NON_INTERACTIVE=1 apt-get install -y curl
 
-    for PACKAGE in $SALSA_PACKAGES_LIST ; do
+# Obtain the package and repository details.
 
-        # Download source package files.
+add_repositories "$APT_PATH"
 
-        apt-get --download-only --only-source source "$PACKAGE"
+# Update the repository records.
 
-        # Obtain the binary package name and attempt to download the package.
-
-        BINARIES=$(grep -e '^Binary:' "$PACKAGE"_*.dsc | cut -d: -f2 | sed 's/,//')
-
-        for BINARY in $BINARIES ; do
-            apt-get download "$BINARY"
-        done
-    done
-}
-
-# Provide different behaviours depending on how this file is invoked.
-
-# Using a list of packages, define a configuration for apt that allows the
-# listed packages to be obtained for installation.
-#
-# Usage: add-repositories.sh <apt base directory>
-
-if [ $(basename "$0") = 'add-repositories.sh' ] ; then
-
-    APT_PATH=${1:-"/etc/apt"}
-
-    # First, make sure that curl is available.
-
-    apt-get update
-    NON_INTERACTIVE=1 apt-get install -y curl
-
-    # Obtain the package and repository details.
-
-    add_repositories "$APT_PATH"
-
-    # Update the repository records.
-
-    apt-get update
-fi
-
-# Using a list of packages, download source and binary packages using apt-get
-# into the indicated directory.
-#
-# Usage: get-packages.sh <directory>
-
-if [ $(basename "$0") = 'get-packages.sh' ] ; then
-
-    PACKAGE_DIR=${1:-.}
-
-    # Enter the directory, creating it if necessary.
-
-    if [ ! -e "$PACKAGE_DIR" ] ; then
-        mkdir -p "$PACKAGE_DIR"
-    fi
-
-    cd "$PACKAGE_DIR"
-
-    # Obtain packages.
-
-    get_packages
-fi
+apt-get update
