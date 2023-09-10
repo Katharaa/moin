@@ -3,12 +3,26 @@ Date: Sun, 10 Sep 2023 16:36:51 +0200
 Subject: Updated Flask-Babel API usage for 3.0.
 
 ---
- src/moin/i18n/__init__.py         | 4 +---
+ src/moin/apps/frontend/views.py   | 2 +-
+ src/moin/i18n/__init__.py         | 6 ++----
  src/moin/i18n/_tests/test_i18n.py | 4 ++--
- 2 files changed, 3 insertions(+), 5 deletions(-)
+ 3 files changed, 5 insertions(+), 7 deletions(-)
 
+diff --git a/src/moin/apps/frontend/views.py b/src/moin/apps/frontend/views.py
+index 7f78ff5..19421c7 100644
+--- a/src/moin/apps/frontend/views.py
++++ b/src/moin/apps/frontend/views.py
+@@ -2296,7 +2296,7 @@ def usersettings():
+         # _timezones_keys = sorted(Locale('en').time_zones.keys())
+         _timezones_keys = [str(tz) for tz in pytz.common_timezones]
+         timezone = Select.using(label=L_('Timezone')).out_of((e, e) for e in _timezones_keys)
+-        _supported_locales = [Locale('en')] + app.babel_instance.list_translations()
++        _supported_locales = [Locale('en')] + app.extensions['babel'].instance.list_translations()
+         locale = Select.using(label=L_('Locale')).out_of(
+             ((str(locale), locale.display_name) for locale in _supported_locales), sort_by=1)
+         submit_label = L_('Save')
 diff --git a/src/moin/i18n/__init__.py b/src/moin/i18n/__init__.py
-index babf4b5..ff27444 100644
+index babf4b5..acdfc89 100644
 --- a/src/moin/i18n/__init__.py
 +++ b/src/moin/i18n/__init__.py
 @@ -32,9 +32,7 @@ L_ = lazy_gettext
@@ -22,6 +36,15 @@ index babf4b5..ff27444 100644
  
  
  def get_locale():
+@@ -55,7 +53,7 @@ def get_locale():
+         except RuntimeError:  # CLI call has no valid request context
+             cli_no_request_ctx = True
+ 
+-        supported_locales = [Locale('en')] + current_app.babel_instance.list_translations()
++        supported_locales = [Locale('en')] + current_app.extensions['babel'].instance.list_translations()
+         logging.debug("supported_locales = {0!r}".format(supported_locales))
+         supported_languages = [str(locale) for locale in supported_locales]
+         logging.debug("supported_languages = {0!r}".format(supported_languages))
 diff --git a/src/moin/i18n/_tests/test_i18n.py b/src/moin/i18n/_tests/test_i18n.py
 index 232e5a4..d9115cd 100644
 --- a/src/moin/i18n/_tests/test_i18n.py
