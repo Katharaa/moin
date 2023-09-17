@@ -1,5 +1,4 @@
 000-setup-setuptools-scm
-002-log-logger
 003-docs-conf-version
 005-jquery-i18n-js
 006-docs-user-markdown-logo
