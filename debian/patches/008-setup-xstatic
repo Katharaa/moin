@@ -2,11 +2,7 @@ From: Paul Boddie <paul@boddie.org.uk>
 Date: Tue, 15 Aug 2023 23:50:33 +0200
 Subject: Fix Python packaging metadata.
 
-The Python packaging name for pdfminer may leak out into requires.txt
-files used by the Python import system, causing Python to refuse to
-look for the installed module/package despite it being present and
-readily discoverable. Various XStatic packages appear to have
-currently unavailable versions for Debian.
+Adjust XStatic package versions; remove drawing-related packages.
 
 moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
 
