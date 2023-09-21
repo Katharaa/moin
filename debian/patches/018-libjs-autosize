@@ -1,0 +1,23 @@
+From: Paul Boddie <paul@boddie.org.uk>
+Date: Thu, 21 Sep 2023 18:22:27 +0200
+Subject: Employ libjs script resource naming.
+
+The Debian libjs package uses the name autosize.min.js instead of
+jquery.autosize-min.js, necessitating a change to the template.
+---
+ src/moin/templates/base.html | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/moin/templates/base.html b/src/moin/templates/base.html
+index 0848605..cd92219 100644
+--- a/src/moin/templates/base.html
++++ b/src/moin/templates/base.html
+@@ -86,7 +86,7 @@
+             <script src="{{ url_for('serve.files', name='jquery', filename='jquery.min.js') }}"></script>
+             <script src="{{ url_for('static', filename='js/jquery.i18n.min.js') }}"></script>
+             <script src="{{ url_for('frontend.template', filename='dictionary.js') }}"></script>
+-            <script src="{{ url_for('serve.files', name='autosize', filename='jquery.autosize-min.js') }}"></script>
++            <script src="{{ url_for('serve.files', name='autosize', filename='autosize.min.js') }}"></script>
+             <script src="{{ url_for('serve.files', name='jquery_tablesorter', filename='jquery.tablesorter.js') }}"></script>
+             <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+             {{- scripts }}

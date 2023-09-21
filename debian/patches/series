@@ -12,3 +12,5 @@
 014-install-help-data
 015-fix-test-time-zones
 016-fix-flask-babel-3-breakage
+017-font-awesome-all-css
+018-libjs-autosize

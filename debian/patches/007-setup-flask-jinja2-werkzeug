@@ -14,7 +14,7 @@ moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/setup.py b/setup.py
-index 3ba663c..8f640da 100644
+index 78edb5d..b25f31c 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -79,7 +79,7 @@ setup_args = dict(

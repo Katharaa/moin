@@ -22,10 +22,10 @@ index 7f78ff5..19421c7 100644
              ((str(locale), locale.display_name) for locale in _supported_locales), sort_by=1)
          submit_label = L_('Save')
 diff --git a/src/moin/i18n/__init__.py b/src/moin/i18n/__init__.py
-index babf4b5..5b6410a 100644
+index 1c69a6b..1a073fa 100644
 --- a/src/moin/i18n/__init__.py
 +++ b/src/moin/i18n/__init__.py
-@@ -32,9 +32,7 @@ L_ = lazy_gettext
+@@ -33,9 +33,7 @@ L_ = lazy_gettext
  
  def i18n_init(app):
      """ initialize Flask-Babel """
@@ -36,7 +36,7 @@ index babf4b5..5b6410a 100644
  
  
  def get_locale():
-@@ -55,7 +53,7 @@ def get_locale():
+@@ -56,7 +54,7 @@ def get_locale():
          except RuntimeError:  # CLI call has no valid request context
              cli_no_request_ctx = True
  
@@ -45,7 +45,7 @@ index babf4b5..5b6410a 100644
          logging.debug("supported_locales = {0!r}".format(supported_locales))
          supported_languages = [str(locale) for locale in supported_locales]
          logging.debug("supported_languages = {0!r}".format(supported_languages))
-@@ -95,16 +93,16 @@ def force_locale(locale):
+@@ -96,16 +94,16 @@ def force_locale(locale):
          yield
          return
      babel = ctx.app.extensions['babel']
