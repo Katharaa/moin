@@ -1,5 +1,5 @@
-moin (2.0+git20230915.a1147ae2-1) unstable; urgency=medium
+moin (2.0+git20230922.bb783d4c-1) unstable; urgency=medium
 
   * Initial release.
 
- -- Paul Boddie <paul@boddie.org.uk>  Sun, 17 Sep 2023 22:06:00 +0200
+ -- Paul Boddie <paul@boddie.org.uk>  Fri, 22 Sep 2023 21:32:00 +0200
