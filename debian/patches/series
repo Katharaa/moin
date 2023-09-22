@@ -2,7 +2,6 @@
 003-docs-conf-version
 005-jquery-i18n-js
 006-docs-user-markdown-logo
-007-setup-flask-jinja2-werkzeug
 008-setup-xstatic
 009-wikiconfig-remove-svgedit-wikidraw
 010-setup-contrib-intermap
@@ -10,7 +9,5 @@
 012-search-namespace-packages
 013-use-normalize.css-package
 014-install-help-data
-015-fix-test-time-zones
-016-fix-flask-babel-3-breakage
 017-font-awesome-all-css
 018-libjs-autosize

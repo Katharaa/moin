@@ -12,10 +12,10 @@ moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
  1 file changed, 1 insertion(+)
 
 diff --git a/setup.py b/setup.py
-index a095656..9caab9f 100644
+index 16217de..93fcf7e 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -61,6 +61,7 @@ setup_args = dict(
+@@ -62,6 +62,7 @@ setup_args = dict(
          'moin.templates': ['*.html', '*.xml', ],
          'moin.apps.admin.templates': ['*.html', ],
          'moin.apps.misc.templates': ['*.html', '*.txt', ],

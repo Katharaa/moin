@@ -12,10 +12,10 @@ moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
  1 file changed, 2 insertions(+), 5 deletions(-)
 
 diff --git a/setup.py b/setup.py
-index b25f31c..a095656 100644
+index 5e0e49a..16217de 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -89,15 +89,12 @@ setup_args = dict(
+@@ -90,15 +90,12 @@ setup_args = dict(
          'setuptools>=51',  # dependency with setuptools_scm
          'sqlalchemy<2.0',  # used by sqla store
          'XStatic>=0.0.2',  # support for static file pypi packages

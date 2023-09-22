@@ -14,16 +14,16 @@ moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
  1 file changed, 3 deletions(-)
 
 diff --git a/setup.py b/setup.py
-index 583b32c..78edb5d 100644
+index 7c59259..5e0e49a 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -67,9 +67,6 @@ setup_args = dict(
+@@ -68,9 +68,6 @@ setup_args = dict(
      use_scm_version={
          'write_to': os.path.join(basedir, 'src', 'moin', '_version.py'),
      },
 -    setup_requires=[
--        'setuptools_scm',  # magically cares for version and packaged files
+-        'setuptools_scm<8.0.0',  # magically cares for version and packaged files
 -    ],
      install_requires=[
          'Babel>=2.10.0',  # internationalization support
-         'blinker>=1.1',  # event signalling (e.g. for change notification trigger)
+         'blinker>=1.5',  # event signalling (e.g. for change notification trigger)
