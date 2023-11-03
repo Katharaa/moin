@@ -15,24 +15,39 @@ Contents
 1. Typical setup
 ----------------
 
-This Debian package has been tested mostly as WSGI and as CGI script 
-with Apache 2.2 (It should work with any web server supporting either
+This Debian package has been tested mostly as WSGI 
+with Apache 2.4 (It should work with any web server supporting either
 of these: WSGI, FCGI, FastCGI, SCGI, CGI)
 
 ###TODO changes this to wsgi example. 
-1.1 Example: A single wiki as CGI with Apache2
+1.1 Example: A single wiki as libapache2-mod-wsgi-py3 with Apache2
 ----------------------------------------------
 
  1) Create and populate /var/www/mywiki
     # mkdir /var/www/mywiki
     # mkdir /var/lib/mywiki
     # cp -r /usr/share/moin/data /usr/share/moin/underlay /var/lib/mywiki
+###TODO work in progress:
+    #moin create-instance --path /var/www/moin2/  
+    #cd /var/www/moin2/
+    #moin index-create
+    #if you want to test it 
+        #moin run --host=0.0.0.0
+    #[optional]if you want to load help files
+        #moin load-help -n en
+        #moin index-build
+    #Create a file /var/www/moin2/moin2.wsgi and paste below
+from moin.app import create_app
+application = create_app('/var/www/moin2/wikiconfig.py')
+    
+
 
  2) Pass on the wiki to Apache:
-    # chown -R www-data: /var/www/mywiki /var/lib/mywiki
+    # chown -R www-data: /var/www/moin2
+
 
  3) Configure Apache2:
-    Add the following as /etc/apache2/sites-available/mywiki:
+    Add the following as /etc/apache2/sites-available/wiki.conf:
 
 	<VirtualHost *:80>
 		ServerName wiki.example.org
@@ -41,6 +56,46 @@ of these: WSGI, FCGI, FastCGI, SCGI, CGI)
 		Alias __STATICPATH__/ "/usr/share/moin/htdocs/"
 		ScriptAlias /MyWiki "/usr/share/moin/server/moin.cgi"
 	</VirtualHost>
+
+###TODO new works
+    #Enable wsgi apache module and restart apache
+    a2enmod wsgi
+    service apache2 restart
+
+    #Add the following to /etc/apache2/sites-available/000-default.conf
+    #It should be placed inside VirtualHost right before the end 
+
+	WSGIScriptAlias /wiki /var/www/moin2/moin2.wsgi
+	#WSGIDaemonProcess moin2 threads=10 processes=3
+	WSGIProcessGroup moin2
+
+
+
+
+
+###TODO need to repurpose the below and add it to virtualhost above, can't find htdocs for static mapping.
+
+#I though this was static folder but no, its a dump of prod wiki into html files for read only system /cache/
+#out of scope
+#moin dump-html --directory /usr/share/moin2 --theme topside_cms --exclude-ns userprofiles --query .*
+
+#old
+#moinmoin-lucas
+#20160828
+<Directory "/usr/share/moin">
+    AllowOverride All
+    Require all granted
+</Directory>
+Alias /moin_static199/ "/usr/share/moin/htdocs/"
+#
+WSGIScriptAlias /mywiki /usr/share/moin/server/moin.wsgi
+WSGIDaemonProcess moin-ssl threads=10 processes=3
+WSGIProcessGroup moin-ssl
+
+#new
+
+
+
 
  4) Configure MoinMoin:
     Edit /etc/moin/mywiki.py to include these lines:
@@ -55,10 +110,10 @@ of these: WSGI, FCGI, FastCGI, SCGI, CGI)
 	www-data wiki.example.org/
 
  5) Activate wiki:
-    # a2ensite mywiki
-    # invoke-rc.d apache2 reload
+    # a2ensite wiki
+    #service apache2 restart
 
- 6) Visit your new wiki at http://your.site/MyWiki/LanguageSetup
+ 6) Visit your new wiki at http://your.site/wiki/LanguageSetup
     then create you account (name according to the superuser you specified
     above).
 
