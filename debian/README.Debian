@@ -5,12 +5,10 @@ Contents
 --------
 
  1. Typical setup
- 1.1 Example
+ 1.1 Host with Apache2 with /wiki Example
  2. Upgrading from earlier versions of moin
  3. "Moin ... <command>"
- 4. Always use farmconfig
- 5. Additional notes
- 6. Optional Features
+ 4. Optional Features
 
 1. Typical setup
 ----------------
@@ -19,116 +17,71 @@ This Debian package has been tested mostly as WSGI
 with Apache 2.4 (It should work with any web server supporting either
 of these: WSGI, FCGI, FastCGI, SCGI, CGI)
 
-###TODO changes this to wsgi example. 
-1.1 Example: A single wiki as libapache2-mod-wsgi-py3 with Apache2
+1.1 Apache2 Example: A single wiki as libapache2-mod-wsgi-py3 with Apache2
 ----------------------------------------------
 
- 1) Create and populate /var/www/mywiki
-    # mkdir /var/www/mywiki
-    # mkdir /var/lib/mywiki
-    # cp -r /usr/share/moin/data /usr/share/moin/underlay /var/lib/mywiki
-###TODO work in progress:
-    #moin create-instance --path /var/www/moin2/  
-    #cd /var/www/moin2/
-    #moin index-create
-    #if you want to test it 
+ I) Create a new instance of wiki and populate it into /var/www/moin2
+    moin create-instance --path /var/www/moin2/  
+    cd /var/www/moin2/
+    moin index-create
+    
+    #[Optional] If you want to test it 
         #moin run --host=0.0.0.0
-    #[optional]if you want to load help files
+    #[Optional]if you want to load english help files
         #moin load-help -n en
         #moin index-build
-    #Create a file /var/www/moin2/moin2.wsgi and paste below
+    
+    #Create a wsgi file /var/www/moin2/moin2.wsgi and paste below
+
+```
+
 from moin.app import create_app
 application = create_app('/var/www/moin2/wikiconfig.py')
     
+```
+
+ II) Give Apache2 permission to read your wiki:
+    # chown -R www-data /var/www/moin2
 
 
- 2) Pass on the wiki to Apache:
-    # chown -R www-data: /var/www/moin2
-
-
- 3) Configure Apache2:
-    Add the following as /etc/apache2/sites-available/wiki.conf:
-
-	<VirtualHost *:80>
-		ServerName wiki.example.org
-		DocumentRoot /var/www/mywiki/
- 		Alias __STATICPATH__/applets/FCKeditor/ "/usr/share/fckeditor/"
-		Alias __STATICPATH__/ "/usr/share/moin/htdocs/"
-		ScriptAlias /MyWiki "/usr/share/moin/server/moin.cgi"
-	</VirtualHost>
-
-###TODO new works
-    #Enable wsgi apache module and restart apache
+ III) Enable Apache2 wsgi module and restart:
     a2enmod wsgi
     service apache2 restart
 
+ IV) Add wiki to Apache2 configuration and reload:
     #Add the following to /etc/apache2/sites-available/000-default.conf
     #It should be placed inside VirtualHost right before the end 
 
 	WSGIScriptAlias /wiki /var/www/moin2/moin2.wsgi
-	#WSGIDaemonProcess moin2 threads=10 processes=3
 	WSGIProcessGroup moin2
 
+    #Reload or Restart Apache2
+    service apache2 reload
+    
+Congratulations!! our site should not be up and running. 
+Welcome to MoinMoin2.
 
 
+ V) Optional Configure for MoinMoin2:
+    
+    Edit /var/www/moin2/wikiconfig.py:
+
+    #Search and change the name of your site:
+	    sitename = u'My MoinMoin' # [Unicode]
+    #Search and change the Landing page when site loads:
+        default_root = 'Home'
+    #Search and change default theme for whole site:
+        theme_default = ....
+    #Search and make a superuser
+        acl_functions = ...
 
 
-###TODO need to repurpose the below and add it to virtualhost above, can't find htdocs for static mapping.
-
-#I though this was static folder but no, its a dump of prod wiki into html files for read only system /cache/
-#out of scope
-#moin dump-html --directory /usr/share/moin2 --theme topside_cms --exclude-ns userprofiles --query .*
-
-#old
-#moinmoin-lucas
-#20160828
-<Directory "/usr/share/moin">
-    AllowOverride All
-    Require all granted
-</Directory>
-Alias /moin_static199/ "/usr/share/moin/htdocs/"
-#
-WSGIScriptAlias /mywiki /usr/share/moin/server/moin.wsgi
-WSGIDaemonProcess moin-ssl threads=10 processes=3
-WSGIProcessGroup moin-ssl
-
-#new
+For more complex setups for apache 2.4, or nginx please refer to moin2 documentation
+https://moin-20.readthedocs.io/en/latest/admin/serve.html
+especially
+https://github.com/moinwiki/moin/tree/master/docs/examples/deployment
 
 
-
-
- 4) Configure MoinMoin:
-    Edit /etc/moin/mywiki.py to include these lines:
-
-	sitename = u'MyWiki' # [Unicode]
-	data_dir = '/var/lib/mywiki/data'
-	data_underlay_dir = '/var/lib/mywiki/underlay'
-	superuser = [u"YourName", ]
-
-    Edit /etc/moin/wikilist to include this line:
-
-	www-data wiki.example.org/
-
- 5) Activate wiki:
-    # a2ensite wiki
-    #service apache2 restart
-
- 6) Visit your new wiki at http://your.site/wiki/LanguageSetup
-    then create you account (name according to the superuser you specified
-    above).
-
- 7) Install the language pack you want to use (typically, you want to install
-    the "all_pages" pack in English, plus the languages use in your wiki).
-
-###TODO do we have these files? are they needed?
-For more complex setups for apache 2.4, you may find inspiration
-in *.conf files below /usr/share/doc/python3-moinmoin2/examples/*.conf .
-
-For more info, both related to above example and other setups like
-standalone, read the upstream file
-/usr/share/doc/python3-moinmoin2/INSTALL.html .
-
-###TODO need to run through these steps. I'll start with new installation first do then come back here.
 2. Upgrading from earlier versions of moin
 ------------------------------------------
 
@@ -165,7 +118,8 @@ From moin 1.9.x:
     make sure you use moin >= 1.9.7 WITH enabled passlib support and that all
     password hashes stored in user profiles are {PASSLIB} hashes. Other hashes
     will get removed in the migration process and users will need to do password recovery via email
-    (or with admin help, if that does not work).
+    (or with admin help, if that does not work). 
+    Need any additional help here, refer to moin2 mailing list.
 
 
 *Backup*:
@@ -177,9 +131,9 @@ From moin 1.9.x:
     #Example
     #tar -czvf mywiki-moin1.9-2023.tar.gz /path/to/data
     
-    #and make an extra copy that we can use because in next step we will start
-    #deleting cache files and deleted pages.
-    #cp -a /path/to/wiki/data /path/to/wiki/data-copy
+    #and make an extra copy that we can use because in next step we might start
+    #to deleting cache files and deleted pages.
+    #cp -ar /path/to/wiki/data /path/to/wiki/data-copy
 
 
 *Upgrade from 1.9.x*
@@ -218,18 +172,22 @@ Importing your moin 1.9 data:
     #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:108 Items     :    131
     #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:109 Revisions :    128
     #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:113 Warnings  :      1 - missing_user
-    #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:113 Warnings  :    350 - missing_file
+    #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:113 Warnings  :      5 - missing_file
     #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:113 Warnings  :      1 - del_item
+    
+    
+    #Rebuild the index, and change the owner of the index files. 
+    moin index-build
+    chown -R www-data /var/www/moin2
+
 
     #CONGRATULATIONS!!!!
 
     #Note that inside wikiconfig.py there is a setting
     #default_root = 'Home'
-    #You can change that to point to any page you just imported. In some older instances for example 'FrontPage'
+    #You can change that to point to any page you just imported. 
+    #In some older instances for example the main page used to be 'FrontPage'
 
-    #Rebuild the index, and change the owner of the index files. 
-    #moin index-build
-    #chown -R www-data: /var/www/moin2
 
     The import19 process will create a wiki directory structure different from moin 1.9.
     There will be three namespaces under /wiki/data: “default”, “userprofiles”, and “users”.
@@ -257,10 +215,6 @@ Keep your backups:
     clean /var/www/moin2 and redo setup and migration.
 
 
-##TODO need to redo atest..forgot my username/pass
-If you want to keep your user’s password hashes and migrate them to moin2, make sure you use moin >= 1.9.7 WITH enabled passlib support and that all password hashes stored in user profiles are {PASSLIB} hashes. Other hashes will get removed in the migration process and users will need to do password recovery via email (or with admin help, if that does not work).
-
-
 
 3. "moin ... <command>"
 -----------------------
@@ -273,64 +227,24 @@ If you want to keep your user’s password hashes and migrate them to moin2, mak
     moin --help
 
 
-
-##TODO I never used farmconfig, as I didn't understand what was the difference between wiki config and farmconfig.
-4. Always use farmconfig
-------------------------
-
-The Debian packaging of MoinMoin has farmconfig enabled by default, and
-it is recommended to always use farmconfig instead of wikiconfig.py.
-
-Some upgrades of MoinMoin require migration of data (as was the case
-from 1.2.4 to 1.3.4). Future Debian packaging routines may offer to do
-the migration automatically, but only for farmconfig wikis!
-
-
-5. Additional notes
--------------------
-
-6. Optional Features
+4. Optional Features
 --------------------
 
 Some optional features requires extra packages and configuration
 
-GUI editor
-    In order to use GUI editor, you need to install the package
-    fckeditor, and make sure you have two lines likes thoses ones
-    in apache configuration file:
-        Alias __STATICPATH__/applets/FCKeditor/ "/usr/share/fckeditor/"
-        Alias __STATICPATH__/ "/usr/share/moin/htdocs/"
 
-    In order to disable GUI editor, you might want to add those two lines
-    in the wiki configuration (typically /etc/moin/mywiki.py)
-        editor_force = True
-        editor_default = 'text'
-
-DocBook rendering.
-    In order to render wiki pages as DocBook (i.e. xml), you will need 
-    to install the package python-xml. (When missing, moinmoin will 
-    display the error "No module named ext.reader")
-
-XSLT Rendering
-    In order to use XSLT Rendering (i.e. xml+xslt), you will need to 
-    install the packages python-4suite-xml, docbook-xsl and xalan.
-    You will also need to enable "allow_xslt = 1" in you configuration
-    file. (Thoses are required to render "#format docbook" pages)
-
-ReStructuredText rendering
-    In order to use reStructuredText rendering (rst), you need to 
-    install the package python-docutils.
-
-Full text indexing / Xapian
-    In order for full-text indexing to work, you will need to install
-    the packages python-xapian. Moin will also use antiword and xls2csv
-    (from the catdoc package) to index the contents of word and excel.
-    xpdf-utils will provide PDF indexing.
-
-Chart for Moinmoin statistics
-    Moinmoin used to be able to create some graphical chart, using
-    python-gdchart v1 libraries.
-    This feature isn't supported by this package, since the package
-    python-gdchart isn't in Debian anymore. (see bug #374126).
+ReadOnly Static html export-dump
+    If you have a heavy ready site you can export all pages to static html.
+    Dump of prod wiki into html files for read only system or some high performance /cache/
+    #moin dump-html --directory /usr/share/moin2-static --theme topside_cms --exclude-ns userprofiles --query .*
 
 
+Markdown Markup
+    Markdown became popular in last few years especially with git related repos for quick Readme or docs.
+    Review your options of using md as the syntax.
+    https://moin-20.readthedocs.io/en/latest/user/markdown.html#markdown-markup
+    or even converting existing pages
+    https://moin-20.readthedocs.io/en/latest/man/moin.html#m-interface
+
+Enjoy!
+Debian MoinMoin2 Team
