@@ -134,50 +134,147 @@ standalone, read the upstream file
 
 Thank you for being here. We know the road was hard, but MoinMoin2 is finally here.
 We will guide you as best we can to get your 1.9 version upgraded to 2.0+. 
+Internally, moin2 is very different than moin 1.x.
+It is recomended you name your folders as moin2 to make sure we keep it clean during migration. 
 
 Upgrading typically involve the following steps:
 
- *. Make a backup!!!
- 1. Add your wiki to /etc/moin2/wikilist
- 2. Upgrade python3-moinmoin2 package.
- 3. Migrate/convert the content of the data folder (see note below)
- 4. Update the underlay, moin.{wsgi,cgi,fcgi,..} and interwiki.txt
- 5. Clean the cache.
- 6. Fix the webserver configuration files.
- *. Test!
-
-Those steps are documented in /usr/share/doc/python3-moinmoin2/Debian.migration(.gz)
-and in upstream's documentations:
-
- - /usr/share/doc/python3-moinmoin2/README.migration(.gz)
- - /usr/share/doc/python3-moinmoin2/changelog(.gz) (= upstream's CHANGE file)
- - /usr/share/doc/python3-moinmoin2/UPDATE.html ###TODO remove 
-   (or http://moinmo.in/HelpOnUpdating )
-
-*The* most common cause of problems after an upgrade is that people
-don't clean the cache. Remember to do this after you've made a major
-change such as a new moin Moin upstream release or a new python
-version. A typical invocation of Moin on a standard Debian system here
-is going to be (as root):
-
-# moin --config-dir=/etc/moin maint cleancache
-
-Note:
-  Debian packaging includes a helper script for "moin migrate", named 
-  moin-mass-migrate, to automatically apply the "migration scripts" on
-  package updates (or whenever you invoke the script yourself). Add your
-  MoinMoin wikis to /etc/moin/wikilist to enable the automation.
+ *. Is your moin <1.9?
+ *. From moin 1.9.x
+ *. Backup!!!
+ *. Upgrade from 1.9.x
+ *. Adjust moin2 configuration, confirm working
+ *. [Optional]Clean up your moin 1.9 data using moin 1.9
+ *. Importing your moin 1.9 data
+ *. Testing
 
 
-3. "Moin ... <command>"
+From moin < 1.9:
+----------------
+    If you run an older moin version than 1.9, please first upgrade to a recent moin 1.9.x 
+    version (preferably >= 1.9.7) before upgrading to moin2. You may want to run that for a
+    while to be sure everything is working as expected.
+
+    Note:
+    Both moin 1.9.x and moin2 are WSGI applications. 
+    Upgrading to 1.9 first also makes sense concerning the WSGI / server side.
+
+From moin 1.9.x:
+----------------
+    If you want to keep your user’s password hashes and migrate them to moin2,
+    make sure you use moin >= 1.9.7 WITH enabled passlib support and that all
+    password hashes stored in user profiles are {PASSLIB} hashes. Other hashes
+    will get removed in the migration process and users will need to do password recovery via email
+    (or with admin help, if that does not work).
+
+
+*Backup*:
+---------
+    Have a backup of everything, so you can go back in case it doesn’t do what you expect. 
+    If you have a testing machine, it is a good idea to try it there first and not directly
+    modify your production machine.
+    
+    #Example
+    #tar -czvf mywiki-moin1.9-2023.tar.gz /path/to/data
+    
+    #and make an extra copy that we can use because in next step we will start
+    #deleting cache files and deleted pages.
+    #cp -a /path/to/wiki/data /path/to/wiki/data-copy
+
+
+*Upgrade from 1.9.x*
+--------------------
+
+Adjusting the moin2 configuration:
+    Your blank wiki should be up and running without any problems. 
+    Before importing your existing wiki data, please ensure you have created an instance and index
+    as described in the install section above (i.e. moin creat-instance, moin index-create steps):
+    It is essential that you review and edit wikiconfig.py before you import your 1.9 data.
+
+Clean up your moin 1.9 data using moin 1.9 
+    If you already upgarded and moin1.9 is no longer in a system skip this.
+    If you are still on the old version, you can clean up cache before we transfer to new version.
+    It is a good idea to clean up your 1.9 data first, before trying to import it into moin2.
+    In doing so you can avoid quite some warnings that the moin2 importer would produce.
+
+    You do this with moin 1.9, using these commands (as root):
+    # moin --config-dir=/etc/moin maint cleancache
+    # moin --config-dir=/etc/moin maint cleanpage
+
+Importing your moin 1.9 data:
+    The import19 cli subcommand will read your 1.9 data_dir (pages, attachments and users),
+    convert the data, write it to your moin2 storage and build the index:
+
+    cd /var/www/moin2
+    moin import19 --data_dir /<path to moin1.9>/wiki/data
+    
+    #Example:
+    #moin import19 --data_dir /var/www/moin1.9/wiki/data-copy
+
+    #You should see something like this:
+    #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:231 Finished conversion!
+    #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:106 Migration statistics:
+    #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:107 Users     :      1
+    #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:108 Items     :    131
+    #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:109 Revisions :    128
+    #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:113 Warnings  :      1 - missing_user
+    #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:113 Warnings  :    350 - missing_file
+    #2023-11-03 15:52:26,567 INFO moin.cli.migration.moin19.import19:113 Warnings  :      1 - del_item
+
+    #CONGRATULATIONS!!!!
+
+    #Note that inside wikiconfig.py there is a setting
+    #default_root = 'Home'
+    #You can change that to point to any page you just imported. In some older instances for example 'FrontPage'
+
+    #Rebuild the index, and change the owner of the index files. 
+    #moin index-build
+    #chown -R www-data: /var/www/moin2
+
+    The import19 process will create a wiki directory structure different from moin 1.9.
+    There will be three namespaces under /wiki/data: “default”, “userprofiles”, and “users”.
+    Each namespace will have “data” and “meta” subdirectories. Additional custom namespaces can be created by
+    editing wikiconfig.py.
+
+    Most of the data from the 1.9 pages directory will be converted to the “default” directory.
+    User home pages and subpages will be converted to the “users” directory. The data from the 1.9 “users” directory
+    will be converted to the “userprofiles” directory.
+    The “userprofiles” directory contains data used internally and should always be protected from any access by ACLs.
+
+
+
+Testing:
+    Review the logs for error messages. Start the moin server and try
+    the “Index” and “History” views to see what is included.
+    Check whether your data is complete and rendering correctly.
+
+    If you find issues with data migration from moin 1.9 to 2,
+    please check the moin2 issue tracker.
+
+Keep your backups:
+    Make sure you keep all backups of your moin 1.9 installation,
+    such as code, config, data, just in case you need to
+    clean /var/www/moin2 and redo setup and migration.
+
+
+##TODO need to redo atest..forgot my username/pass
+If you want to keep your user’s password hashes and migrate them to moin2, make sure you use moin >= 1.9.7 WITH enabled passlib support and that all password hashes stored in user profiles are {PASSLIB} hashes. Other hashes will get removed in the migration process and users will need to do password recovery via email (or with admin help, if that does not work).
+
+
+
+3. "moin ... <command>"
 -----------------------
 
-There are a lot of useful extra commands provided by Moin: account
-administration, data migration, etc. Read the docs for more
-information about what's available here. As a Moin admin they will
-make your life much easier!
+    There are a lot of useful extra commands provided by Moin: account
+    administration, data migration, etc. Read the docs for more
+    information about what's available here. As a Moin admin they will
+    make your life much easier!
+    
+    moin --help
 
 
+
+##TODO I never used farmconfig, as I didn't understand what was the difference between wiki config and farmconfig.
 4. Always use farmconfig
 ------------------------
 
@@ -191,24 +288,6 @@ the migration automatically, but only for farmconfig wikis!
 
 5. Additional notes
 -------------------
-
-If you want to customize the visual layout of the wiki, copy the htdoc
-directory as well, change the Alias line, and (optionally) change the
-url_prefix option in moin_config.py.
-
-The dictionary can be improved by adding (symlinks to) wordlists to the
-data/dict. If one of the wordlist packages (eg. wenglish, wdutch, 
-miscfiles) is installed you can link to /usr/share/dict/words or the
-file(s) directly. Alternatively (or in addition) you can put other
-wordlists into the moin dict folder. One place to look for wordlists is
-here: http://wetelephant.cotse.com/wordlists/
-
-Beware if copying /usr/share/moin to a different location: The symlink
-/usr/share/moin/data/dict/word may need to be adjusted to properly point
-to /usr/share/dict/words - or replaced as described above.
-
-Read more about the options on the wiki page HelpOnConfiguration.
-
 
 6. Optional Features
 --------------------
