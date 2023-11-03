@@ -19,6 +19,7 @@ This Debian package has been tested mostly as WSGI and as CGI script
 with Apache 2.2 (It should work with any web server supporting either
 of these: WSGI, FCGI, FastCGI, SCGI, CGI)
 
+###TODO changes this to wsgi example. 
 1.1 Example: A single wiki as CGI with Apache2
 ----------------------------------------------
 
@@ -64,35 +65,38 @@ of these: WSGI, FCGI, FastCGI, SCGI, CGI)
  7) Install the language pack you want to use (typically, you want to install
     the "all_pages" pack in English, plus the languages use in your wiki).
 
-
-For more complex setups for apache 1.3 and 2.0, you may find inspiration
-in *.conf files below /usr/share/doc/python-moinmoin/examples/*.conf .
+###TODO do we have these files? are they needed?
+For more complex setups for apache 2.4, you may find inspiration
+in *.conf files below /usr/share/doc/python3-moinmoin2/examples/*.conf .
 
 For more info, both related to above example and other setups like
 standalone, read the upstream file
-/usr/share/doc/python-moinmoin/INSTALL.html .
+/usr/share/doc/python3-moinmoin2/INSTALL.html .
 
-
+###TODO need to run through these steps. I'll start with new installation first do then come back here.
 2. Upgrading from earlier versions of moin
 ------------------------------------------
 
+Thank you for being here. We know the road was hard, but MoinMoin2 is finally here.
+We will guide you as best we can to get your 1.9 version upgraded to 2.0+. 
+
 Upgrading typically involve the following steps:
 
- *. Make a backup!
- 1. Add your wiki to /etc/moin/wikilist
- 2. Upgrade python-moinmoin package.
+ *. Make a backup!!!
+ 1. Add your wiki to /etc/moin2/wikilist
+ 2. Upgrade python3-moinmoin2 package.
  3. Migrate/convert the content of the data folder (see note below)
  4. Update the underlay, moin.{wsgi,cgi,fcgi,..} and interwiki.txt
  5. Clean the cache.
  6. Fix the webserver configuration files.
  *. Test!
 
-Those steps are documented in /usr/share/doc/python-moinmoin/NEWS.Debian(.gz)
+Those steps are documented in /usr/share/doc/python3-moinmoin2/Debian.migration(.gz)
 and in upstream's documentations:
 
- - /usr/share/doc/python-moinmoin/README.migration(.gz)
- - /usr/share/doc/python-moinmoin/changelog(.gz) (= upstream's CHANGE file)
- - /usr/share/doc/python-moinmoin/UPDATE.html
+ - /usr/share/doc/python3-moinmoin2/README.migration(.gz)
+ - /usr/share/doc/python3-moinmoin2/changelog(.gz) (= upstream's CHANGE file)
+ - /usr/share/doc/python3-moinmoin2/UPDATE.html ###TODO remove 
    (or http://moinmo.in/HelpOnUpdating )
 
 *The* most common cause of problems after an upgrade is that people
@@ -195,5 +199,4 @@ Chart for Moinmoin statistics
     This feature isn't supported by this package, since the package
     python-gdchart isn't in Debian anymore. (see bug #374126).
 
-more on /usr/share/doc/python-moinmoin/REQUIREMENTS(.gz)
 
