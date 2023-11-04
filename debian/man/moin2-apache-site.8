@@ -1,0 +1,50 @@
+.TH MOIN2-APACHE-SITE "8" "2023-11-05" "System Manager's Manual"
+.SH NAME
+moin2-apache-site \- Define an Apache site for a MoinMoin wiki
+.SH SYNOPSIS
+.B moin2-apache-site
+.I site
+[
+.I directory
+]
+.SH DESCRIPTION
+.B moin2-apache-site
+generates a site configuration file for a MoinMoin wiki with the indicated
+.I site
+name, writing it into the conventional Apache
+.I /etc/apache2/sites-available
+directory. If
+.I directory
+is specified, the configuration file will be written to this directory
+instead.
+.PP
+The generated file itself will have a filename of the following form:
+.IP
+.IR site .conf
+.PP
+For example:
+.IP
+moin2.conf
+.SH EXAMPLES
+To define a site configuration for a wiki called
+.IR moin2 :
+.IP
+moin2-apache-site moin2
+.PP
+To define a site configuration for a wiki called
+.I moin2
+in an alternative location
+.IR /tmp/sites :
+.IP
+moin2-apache-site moin2 /etc/sites-available
+.PP
+.SH AUTHOR
+Paul Boddie <paul@boddie.org.uk>
+.SH COPYRIGHT
+Copyright \(co 2023 Paul Boddie <paul@boddie.org.uk>
+.PP
+This program is free software; you may redistribute it under the terms of
+the GNU General Public License version 2 or (at your option) a later version.
+This program has absolutely no warranty.
+.SH SEE ALSO
+.BR moin2-apache-wsgi "(8), " apache2 (8).

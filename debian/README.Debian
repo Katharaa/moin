@@ -1,85 +1,180 @@
-moin for Debian
-===============
+MoinMoin 2 for Debian
+=====================
+
+For brevity, Moin is used to refer to MoinMoin throughout this document.
+Unless otherwise stated, all references to Moin without an explicit version
+number refer to MoinMoin 2, as opposed to MoinMoin 1.9 and earlier.
+
+Commands to be run are preceded with either the $ or # prompt, indicating
+unprivileged and privileged use.
+
 
 Contents
 --------
 
- 1. Typical setup
- 1.1 Host with Apache2 with /wiki Example
- 2. Upgrading from earlier versions of moin
- 3. "Moin ... <command>"
+ 1. Getting Started
+ 1.1 Creating a New Wiki Site
+ 1.2 Standalone Hosting
+ 1.3 Hosting with Apache2 using WSGI
+ 1.4 Further Configuration
+ 1.5 More Documentation
+ 2. Upgrading from Earlier Versions of Moin
+ 3. The moin Command
  4. Optional Features
 
-1. Typical setup
-----------------
 
-This Debian package has been tested mostly as WSGI 
-with Apache 2.4 (It should work with any web server supporting either
-of these: WSGI, FCGI, FastCGI, SCGI, CGI)
+1. Getting Started
+------------------
 
-1.1 Apache2 Example: A single wiki as libapache2-mod-wsgi-py3 with Apache2
-----------------------------------------------
+This Debian package has been tested running Moin either using its built-in Web
+server or as a WSGI application with the Apache Web server.
 
- I) Create a new instance of wiki and populate it into /var/www/moin2
-    moin create-instance --path /var/www/moin2/  
-    cd /var/www/moin2/
-    moin index-create
-    
-    #[Optional] If you want to test it 
-        #moin run --host=0.0.0.0
-    #[Optional]if you want to load english help files
-        #moin load-help -n en
-        #moin index-build
-    
-    #Create a wsgi file /var/www/moin2/moin2.wsgi and paste below
+1.1 Creating a New Wiki Site
+----------------------------
 
-```
+This package provides the moin command which is used to populate a directory
+for new a wiki site or instance. If such a directory does not exist, the tool
+will attempt to create it. Here, the appropriate considerations regarding file
+and directory ownership and user privileges apply.
 
-from moin.app import create_app
-application = create_app('/var/www/moin2/wikiconfig.py')
-    
-```
+To create a new wiki site or instance in /var/www/moin2 with a usable
+collection of help and welcome pages:
 
- II) Give Apache2 permission to read your wiki:
+    $ moin create-instance --full --path /var/www/moin2
+    $ cd /var/www/moin2
+    $ moin index-create
+
+The --full option can be omitted and additional pages added later using the
+following commands. For example, for English help pages:
+
+    $ moin load-help -n en
+    $ moin index-build
+
+For a locally accessible wiki, a directory may be created under a user's home
+directory or other generally accessible location. For a more broadly
+accessible wiki served by a Web server, it may be prudent to create a
+directory within /var/www for consistency with normal administrative
+practices. Specific details related to this latter scenario are given in the
+appropriate section below.
+
+1.2 Standalone Hosting
+----------------------
+
+Moin offers a built-in Web server that allows the hosting of a wiki on a
+system without having to configure a dedicated Web server. This can be started
+as follows:
+
+    $ moin run
+
+By default, it will serve on a local address, inaccessible to other systems on
+a network, but this can be changed by specifying host and port options. The
+Moin developers do not generally recommend using the built-in server in this
+way. However, making Moin available in this way can be made somewhat safer by
+specifying additional options disabling the built-in debugger and
+auto-reloading:
+
+    $ moin run --host 0.0.0.0 --port 8080 --no-debugger --no-reload
+
+Running Moin on a privileged port requires invocation by a privileged user and
+is strongly discouraged.
+
+1.3 Hosting with Apache 2 using WSGI
+------------------------------------
+
+The Apache WSGI module is a recommendation for this package and may have been
+installed with this package. If not, it can be installed as follows:
+
+    # apt install libapache2-mod-wsgi-py3
+
+The module is enabled in Apache and the server restarted as follows:
+
+    # a2enmod wsgi
+    # service apache2 restart
+
+To observe administrative conventions, a location under /var/www may be
+created to hold a new wiki. However, the moin command will not be able to
+create such a directory unless run as a privileged user. Instead of running
+moin as such a privileged user, it is recommended that a new directory is
+created first and its ownership changed so that it may be accessed by certain
+unprivileged users including the Web server itself.
+
+To create a directory for a new wiki in /var/www/moin2 to be accessed by an
+unprivileged user, here given as myuser, the following commands can be run:
+
+    # mkdir /var/www/moin2
+    # chown myuser /var/www/moin2
+
+With this directory in place, the wiki can be initialised by the unprivileged
+user as described above.
+
+In addition to the wiki content, a WSGI script is also required. This can be
+installed by running the supplied script:
+
+    $ moin2-apache-wsgi moin2
+
+This will install a file called moin2.wsgi into /var/www/moin2.
+
+Apache must now be given permission to read the wiki by issuing the following
+command as a privileged user:
+
     # chown -R www-data /var/www/moin2
 
+A site definition for the wiki should be added to the Apache configuration.
+This can be installed by running the supplied script:
 
- III) Enable Apache2 wsgi module and restart:
-    a2enmod wsgi
-    service apache2 restart
+    # moin2-apache-site moin2
 
- IV) Add wiki to Apache2 configuration and reload:
-    #Add the following to /etc/apache2/sites-available/000-default.conf
-    #It should be placed inside VirtualHost right before the end 
+The site is enabled and the server configuration reloaded as follows:
 
-	WSGIScriptAlias /wiki /var/www/moin2/moin2.wsgi
-	WSGIProcessGroup moin2
+    # a2ensite moin2
+    # service apache2 reload
 
-    #Reload or Restart Apache2
-    service apache2 reload
-    
-Congratulations!! our site should not be up and running. 
-Welcome to MoinMoin2.
+The new wiki should now be up and running.
 
+1.4 Further Configuration
+-------------------------
 
- V) Optional Configure for MoinMoin2:
-    
-    Edit /var/www/moin2/wikiconfig.py:
+The wikiconfig.py file installed in the directory created for a wiki should be
+edited to customise the wiki configuration. A number of settings can be
+usefully changed and some of these are given below.
 
-    #Search and change the name of your site:
-	    sitename = u'My MoinMoin' # [Unicode]
-    #Search and change the Landing page when site loads:
-        default_root = 'Home'
-    #Search and change default theme for whole site:
-        theme_default = ....
-    #Search and make a superuser
-        acl_functions = ...
+The name of your wiki or site:
 
+    sitename = 'My MoinMoin'
 
-For more complex setups for apache 2.4, or nginx please refer to moin2 documentation
-https://moin-20.readthedocs.io/en/latest/admin/serve.html
-especially
-https://github.com/moinwiki/moin/tree/master/docs/examples/deployment
+The home page or landing page when visiting the top level of the site:
+
+    default_root = 'Home'
+
+The default theme for the site:
+
+    theme_default = 'modernized'
+
+Superuser nomination and other editing restrictions:
+
+    acl_functions = '+YourName:superuser'
+
+For more complex setups for Apache 2.4 or other Web servers, please refer to
+the server options section of the package documentation:
+
+/usr/share/doc/python3-moinmoin2/html/admin/serve.html
+
+A number of deployment scripts are also included in the examples for this
+package:
+
+/usr/share/doc/python3-moinmoin2/examples
+
+1.5 More Documentation
+----------------------
+
+The Moin documentation is included with this package:
+
+/usr/share/doc/python3-moinmoin2/html/index.html
+
+The online version of this documentation is found at the following location at
+the time of writing:
+
+https://moin-20.readthedocs.io/en/latest/index.html
 
 
 2. Upgrading from earlier versions of moin
@@ -216,8 +311,8 @@ Keep your backups:
 
 
 
-3. "moin ... <command>"
------------------------
+3. The moin Command
+-------------------
 
     There are a lot of useful extra commands provided by Moin: account
     administration, data migration, etc. Read the docs for more

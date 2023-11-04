@@ -1,0 +1,56 @@
+.TH MOIN2-APACHE-WSGI "8" "2023-11-05" "System Manager's Manual"
+.SH NAME
+moin2-apache-wsgi \- Define a WSGI script for a MoinMoin wiki
+.SH SYNOPSIS
+.B moin2-apache-wsgi
+.I site
+[
+.I directory
+]
+.SH DESCRIPTION
+.B moin2-apache-wsgi
+generates a WSGI script for a MoinMoin wiki with the indicated
+.I site
+name, writing it into a directory of the same name containing wiki content,
+located within the conventional
+.I /var/www
+location for Web content in general. If
+.I directory
+is specified, the WSGI script file will be written to the
+.I site
+directory residing within the specified
+.I directory
+instead.
+.PP
+The generated script itself will have a filename of the following form:
+.IP
+.IR site .wsgi
+.PP
+For example:
+.IP
+moin2.wsgi
+.SH EXAMPLES
+To define a WSGI script for a wiki called
+.I moin2
+whose content resides in the
+.IR /var/www/moin2 " directory:"
+.IP
+moin2-apache-wsgi moin2
+.PP
+To define a WSGI script for a wiki called
+.I moin2
+whose content resides in the
+.IR /tmp/www/moin2 " directory:"
+.IP
+moin2-apache-wsgi moin2 /tmp/www
+.PP
+.SH AUTHOR
+Paul Boddie <paul@boddie.org.uk>
+.SH COPYRIGHT
+Copyright \(co 2023 Paul Boddie <paul@boddie.org.uk>
+.PP
+This program is free software; you may redistribute it under the terms of
+the GNU General Public License version 2 or (at your option) a later version.
+This program has absolutely no warranty.
+.SH SEE ALSO
+.BR moin2-apache-site "(8), " apache2 (8).
