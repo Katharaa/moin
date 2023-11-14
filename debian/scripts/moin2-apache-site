@@ -1,41 +1,178 @@
 #!/bin/sh
 
-# Define an Apache site configuration for a wiki.
+# Deploy an existing wiki using WSGI and define an appropriate Apache site.
 #
 # Copyright (C) 2023 Paul Boddie <paul@boddie.org.uk>
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor,
-# Boston, MA  02110-1301, USA
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
 
-SITENAME=$1
-CONFDIR=${2:-"/etc/apache2/sites-available"}
 
-if [ ! "$SITENAME" ] ; then
-    echo "Please indicate a site name." 1>&2
+
+# The wiki instance directory.
+
+WIKIDIR=$1
+
+# The URL path where the wiki will be published.
+
+URLPATH=$2
+
+# The Apache site definitions directory.
+
+CONFDIR=${3:-"/etc/apache2/sites-available"}
+
+# The Web site publishing root directory.
+
+WEBROOT=${4:-"/var/www"}
+
+# The Web server user identity.
+
+WEBUSER=${5:-"www-data"}
+
+
+
+# Provide general guidance.
+
+if [ ! "$WIKIDIR" ] ; then
+    cat 1>&2 <<EOF
+Usage:
+
+$(basename $0) <wiki> [ <url-path> [ <sites-path> [ <web-root> [ <web-user> ] ] ] ]
+
+This program will move an existing wiki instance to an appropriate location for
+publishing using Apache.
+
+To publish this wiki instance using this program:
+
+  $(basename $0) moin2
+
+This will make the wiki available at the following URL path:
+
+  /moin2
+
+The URL path can be changed to differ from the wiki instance name as shown by
+the following example:
+
+  $(basename $0) moin2 /wiki
+EOF
     exit 1
 fi
+
+# Ensure that an existing wiki instance exists.
+
+if [ ! -d "$WIKIDIR" ] ; then
+    cat 1>&2 <<EOF
+The indicated wiki instance does not exist:
+
+  $WIKIDIR
+
+To create this wiki instance, invoke the following command:
+
+  moin create-instance --full --path $WIKIDIR
+EOF
+    exit 1
+fi
+
+# Test that the indicated directory is actually a wiki instance.
+
+if [ ! -e "$WIKIDIR/wikiconfig.py" ] ; then
+    echo "The indicated directory is not a wiki instance." 1>&2
+    exit 1
+fi
+
+# Test for the Apache-related directories.
 
 if [ ! -d "$CONFDIR" ] ; then
     echo "Apache configuration directory $CONFDIR does not exist." 1>&2
     exit 1
 fi
 
+if [ ! -d "$WEBROOT" ] ; then
+    echo "Web server directory $WEBROOT does not exist." 1>&2
+    exit 1
+fi
+
+
+
+# Use the name of the wiki instance directory as the site name.
+
+SITENAME=$(basename "$WIKIDIR")
+SITEDIR="$WEBROOT/$SITENAME"
+
+# Derive the URL path from the site name if not indicated.
+
+URLPATH=${URLPATH:-"/$SITENAME"}
+
+# Move the wiki instance if it does not already exist in the publishing
+# location.
+
+if [ -d "$SITEDIR" ] ; then
+    echo "A site already exists at $SITEDIR and will not be replaced." 1>&2
+    exit 1
+fi
+
+echo "Moving $WIKIDIR to $SITEDIR for publishing." 1>&2
+
+if ! mv "$WIKIDIR" "$SITEDIR" ; then
+    echo "Could not move $WIKIDIR for publishing." 1>&2
+    exit 1
+fi
+
+# Make the wiki site directory accessible to the Web server.
+
+chgrp -R "$WEBUSER" "$SITEDIR"
+find "$SITEDIR" -type d | xargs chmod g=rwx
+find "$SITEDIR" -type f | xargs chmod g=rx
+chmod g=r "$SITEDIR/wikiconfig.py"
+
 # Replace parameters in the site definition given below.
 
+# WSGIDaemonProcess is employed for compatibility with the typical Apache
+# configuration.
+
+# WSGIApplicationGroup is needed to allow multiple sites without extensions
+# getting upset.
+
 cat <<EOF > "$CONFDIR/$SITENAME.conf"
-WSGIScriptAlias /wiki /var/www/$SITENAME/$SITENAME.wsgi
+WSGIScriptAlias $URLPATH "$SITEDIR/moin2.wsgi"
 WSGIDaemonProcess $SITENAME
 WSGIProcessGroup $SITENAME
+WSGIApplicationGroup %{GLOBAL}
+EOF
+
+# Replace parameters in the WSGI script given below.
+
+cat <<EOF > "$SITEDIR/moin2.wsgi"
+from moin.app import create_app
+application = create_app("$SITEDIR/wikiconfig.py")
+EOF
+
+# Some further instructions.
+
+cat <<EOF
+A new site called $SITENAME has been defined for a wiki found here:
+
+  $SITEDIR
+
+To enable this site, you need to run:
+
+  a2ensite $SITENAME
 EOF

@@ -1,50 +1,111 @@
-.TH MOIN2-APACHE-SITE "8" "2023-11-05" "System Manager's Manual"
+.TH MOIN2-APACHE-SITE "8" "2023-11-14" "System Manager's Manual"
 .SH NAME
 moin2-apache-site \- Define an Apache site for a MoinMoin wiki
 .SH SYNOPSIS
 .B moin2-apache-site
-.I site
+.I wiki
 [
-.I directory
-]
+.I url-path
+[
+.I sites-path
+[
+.I web-root
+[
+.I web-user
+] ] ] ]
 .SH DESCRIPTION
 .B moin2-apache-site
-generates a site configuration file for a MoinMoin wiki with the indicated
-.I site
-name, writing it into the conventional Apache
+deploys a MoinMoin wiki residing in the indicated
+.I wiki
+directory, moving it into the Web publishing location
+.I /var/www
+and writing a site configuration file into the conventional Apache
 .I /etc/apache2/sites-available
-directory. If
-.I directory
-is specified, the configuration file will be written to this directory
-instead.
+directory.
 .PP
-The generated file itself will have a filename of the following form:
+If
+.I sites-path
+is specified, the configuration file will be written to this directory
+instead, and if
+.I web-root
+is specified, the wiki directory will be moved into this directory instead.
+.PP
+The generated site configuration file will have a filename of the following
+form:
 .IP
 .IR site .conf
 .PP
 For example:
 .IP
 moin2.conf
+.PP
+The site name and thus this filename is derived from the name of the wiki
+directory.
+.PP
+The generated configuration file defines the URL path at which the wiki will
+be published by the Web server. By default, this is also derived from the name
+of the wiki directory. For example:
+.IP
+/moin2
+.PP
+The URL path is the portion of the URL following the address details of a
+server. Thus, a server accessible at
+.I www.example.com
+will publish a wiki with a URL path of
+.I /moin2
+as...
+.IP
+www.example.com/moin2
+.PP
+This can be overridden by specifying the
+.I url-path
+argument.
+.PP
+The
+.I web-user
+argument permits a different identity to be employed when defining filesystem
+access to the published wiki resources. By default, it uses the
+.I www-data
+identity as provided by Debian for use with Apache. The user who created the
+wiki to be deployed will retain ownership of existing files and directories,
+with the designated identity indicating a group with which the wiki resources
+will be associated.
 .SH EXAMPLES
-To define a site configuration for a wiki called
-.IR moin2 :
+To deploy a wiki residing in the
+.I moin2
+directory, moving it to
+.IR /var/www/moin2 :
 .IP
 moin2-apache-site moin2
 .PP
-To define a site configuration for a wiki called
-.I moin2
-in an alternative location
-.IR /tmp/sites :
+To deploy a wiki residing in the
+.I /home/myuser/moin2
+directory, moving it to
+.IR /var/www/moin2 :
 .IP
-moin2-apache-site moin2 /etc/sites-available
+moin2-apache-site /home/myuser/moin2
+.PP
+Note that both of the examples above will employ
+.I moin2
+as their site name and attempt to publish their wiki instances at the
+.I /var/www/moin2
+filesystem location. Where wiki directories have been created with the same
+name, renaming before publishing may alleviate any potential naming
+conflicts.
+.PP
+To provide a different URL path from the default:
+.IP
+moin2-apache-site moin2 /wiki
+.PP
+Note that the leading slash character should be indicated in the URL path.
 .PP
 .SH AUTHOR
 Paul Boddie <paul@boddie.org.uk>
 .SH COPYRIGHT
 Copyright \(co 2023 Paul Boddie <paul@boddie.org.uk>
 .PP
-This program is free software; you may redistribute it under the terms of
-the GNU General Public License version 2 or (at your option) a later version.
-This program has absolutely no warranty.
+This program is free software. See
+.I /usr/share/doc/python3-moinmoin2/copyright
+for more information.
 .SH SEE ALSO
-.BR moin2-apache-wsgi "(8), " apache2 (8).
+.BR a2dissite "(8), " a2ensite "(8), " apache2 (8).

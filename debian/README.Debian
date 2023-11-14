@@ -34,14 +34,13 @@ server or as a WSGI application with the Apache Web server.
 
 This package provides the moin command which is used to populate a directory
 for new a wiki site or instance. If such a directory does not exist, the tool
-will attempt to create it. Here, the appropriate considerations regarding file
-and directory ownership and user privileges apply.
+will attempt to create it.
 
-To create a new wiki site or instance in /var/www/moin2 with a usable
-collection of help and welcome pages:
+To create a new wiki site or instance called moin2 in the current directory
+with a usable collection of help and welcome pages:
 
-    $ moin create-instance --full --path /var/www/moin2
-    $ cd /var/www/moin2
+    $ moin create-instance --full --path moin2
+    $ cd moin2
     $ moin index-create
 
 The --full option can be omitted and additional pages added later using the
@@ -62,7 +61,7 @@ appropriate section below.
 
 Moin offers a built-in Web server that allows the hosting of a wiki on a
 system without having to configure a dedicated Web server. This can be started
-as follows:
+within the wiki instance directory as follows:
 
     $ moin run
 
@@ -91,40 +90,23 @@ The module is enabled in Apache and the server restarted as follows:
     # a2enmod wsgi
     # service apache2 restart
 
-To observe administrative conventions, a location under /var/www may be
-created to hold a new wiki. However, the moin command will not be able to
-create such a directory unless run as a privileged user. Instead of running
-moin as such a privileged user, it is recommended that a new directory is
-created first and its ownership changed so that it may be accessed by certain
-unprivileged users including the Web server itself.
+To observe existing administrative conventions, a wiki may be published under
+/var/www and a site defined in /etc/apache2/sites-available. This may be
+accomplished using a script, moin2-apache-site, provided by this package.
 
-To create a directory for a new wiki in /var/www/moin2 to be accessed by an
-unprivileged user, here given as myuser, the following commands can be run:
-
-    # mkdir /var/www/moin2
-    # chown myuser /var/www/moin2
-
-With this directory in place, the wiki can be initialised by the unprivileged
-user as described above.
-
-In addition to the wiki content, a WSGI script is also required. This can be
-installed by running the supplied script:
-
-    $ moin2-apache-wsgi moin2
-
-This will install a file called moin2.wsgi into /var/www/moin2.
-
-Apache must now be given permission to read the wiki by issuing the following
-command as a privileged user:
-
-    # chown -R www-data /var/www/moin2
-
-A site definition for the wiki should be added to the Apache configuration.
-This can be installed by running the supplied script:
+Having first created a wiki instance as described above, the instance can be
+moved to the publishing location. For example, for an instance called moin2:
 
     # moin2-apache-site moin2
 
-The site is enabled and the server configuration reloaded as follows:
+In this case, the invoked script will move the wiki instance to
+/var/www/moin2, install an appropriate WSGI script into the instance, define a
+site configuration in /etc/apache2/sites-available, and grant permissions to
+the Web server user so that Apache can access various files and directories.
+The user who created the wiki will retain ownership of the published files.
+
+With the site made available, it can be enabled and the server configuration
+reloaded as follows:
 
     # a2ensite moin2
     # service apache2 reload

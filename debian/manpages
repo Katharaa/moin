@@ -1,4 +1,3 @@
 build/man/moin.1
 build/man/moinmoin.1
 debian/man/moin2-apache-site.8
-debian/man/moin2-apache-wsgi.8
