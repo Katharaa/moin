@@ -13,10 +13,10 @@ moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
  setup.py | 26 +++++++++++++++++---------
  1 file changed, 17 insertions(+), 9 deletions(-)
 
-diff --git a/setup.py b/setup.py
-index 93fcf7e..59de323 100644
---- a/setup.py
-+++ b/setup.py
+Index: moin/setup.py
+===================================================================
+--- moin.orig/setup.py
++++ moin/setup.py
 @@ -6,6 +6,7 @@
  
  import os
@@ -25,7 +25,7 @@ index 93fcf7e..59de323 100644
  
  
  basedir = os.path.abspath(os.path.dirname(__file__))
-@@ -13,6 +14,18 @@ with open(os.path.join(basedir, 'README.rst')) as f:
+@@ -13,6 +14,18 @@ with open(os.path.join(basedir, 'README.
      long_description = f.read()
  
  
@@ -44,7 +44,7 @@ index 93fcf7e..59de323 100644
  setup_args = dict(
      name="moin",
      python_requires='>=3.8',
-@@ -53,15 +66,10 @@ setup_args = dict(
+@@ -54,15 +67,10 @@ setup_args = dict(
      package_dir={'': 'src'},
  
      package_data={

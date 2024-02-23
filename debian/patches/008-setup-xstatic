@@ -7,15 +7,15 @@ Adjust XStatic package versions; remove drawing-related packages.
 moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
 
   * Initial release.
----
- setup.py | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/setup.py b/setup.py
-index 5e0e49a..16217de 100644
---- a/setup.py
-+++ b/setup.py
-@@ -90,15 +90,12 @@ setup_args = dict(
+Last-Updated: 2024-02-23
+Reviwed-By: Kathara Sasikumar <katharasasikumar007@gmail.com>
+
+Index: moin/setup.py
+===================================================================
+--- moin.orig/setup.py
++++ moin/setup.py
+@@ -92,13 +92,12 @@ setup_args = dict(
          'setuptools>=51',  # dependency with setuptools_scm
          'sqlalchemy<2.0',  # used by sqla store
          'XStatic>=0.0.2',  # support for static file pypi packages
@@ -26,8 +26,6 @@ index 5e0e49a..16217de 100644
          'XStatic-autosize',
          'XStatic-jQuery>=1.8.2',
 -        'XStatic-jQuery-File-Upload>=10.31.0',
--        'XStatic-TWikiDraw-moin>=2004.10.23.2',
--        'XStatic-AnyWikiDraw>=0.14.2',
 -        'XStatic-svg-edit-moin>=2012.11.15.1',
 +        'XStatic-jQuery-File-Upload',
          'XStatic-JQuery.TableSorter>=2.14.5.1',

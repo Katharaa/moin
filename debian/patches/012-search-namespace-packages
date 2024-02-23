@@ -8,10 +8,10 @@ not apparently installed.
  setup.py | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/setup.py b/setup.py
-index 59de323..9b9cc24 100644
---- a/setup.py
-+++ b/setup.py
+Index: moin/setup.py
+===================================================================
+--- moin.orig/setup.py
++++ moin/setup.py
 @@ -5,7 +5,7 @@
  # License: GNU GPL v2 (or any later version), see LICENSE.txt for details.
  
@@ -21,7 +21,7 @@ index 59de323..9b9cc24 100644
  from glob import glob
  
  
-@@ -62,7 +62,7 @@ setup_args = dict(
+@@ -63,7 +63,7 @@ setup_args = dict(
          "Topic :: Text Processing :: Markup",
      ],
  
