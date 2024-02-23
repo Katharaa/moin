@@ -165,6 +165,22 @@ Inline links use the form: ::
 **reST NOTE**: Links with title attributes and images as links are not supported in reST.
 The internal links above are broken.
 
+Wikilinks
+---------
+
+Wikilinks use the form: ::
+
+    [[PageName]]
+
+===========================================   ===============================================
+ **Markup**                                    **Result**
+===========================================   ===============================================
+ [[Page]]                                      `Page <http:Page>`_
+ [[Page/Subpage]]                              `Subpage <http:Page/Subpage>`_
+===========================================   ===============================================
+
+This features uses the `mdx_wikilink_plus <https://github.com/neurobin/mdx_wikilink_plus>`_ extension.
+
 Reference Links
 ---------------
 
@@ -517,11 +533,11 @@ As shown in the second table below, use of outside borders and neat alignment of
 
 **Markup**: ::
 
-    |Tables            |Are            |Very  |Cool    |
-    |------------------|:-------------:|-----:|:-------|
-    |col 2 is          |centered       |$12   |Gloves  |
-    |col 3 is          |right-aligned  |$1600 |Necklace|
-    |col 4 is          |left-aligned   |$100  |Hat     |
+    | Tables            |Are            |Very  |Cool    |
+    |-------------------|:-------------:|-----:|:-------|
+    | col 2 is          |centered       |$12   |Gloves  |
+    | col 3 is          |right-aligned  |$1600 |Necklace|
+    | col 4 is          |left-aligned   |$100  |Hat     |
 
     `Tables`            |*Are*            |Very  |Cool
     ------------|:-------------:|-----:|:-------
@@ -549,7 +565,7 @@ As shown in the second table below, use of outside borders and neat alignment of
 ================== ================= ======== ==========
 
 
-**reST NOTE**: reST does not support cell alignment.
+**reST NOTE**: reST does not support cell alignment, therefore the last example shown above does not reflect the resulting alignment.
 
 Syntax Highlighting of Preformatted Code
 ----------------------------------------
@@ -701,3 +717,39 @@ Footnotes [1]_ have a label [#label]_ and a definition [#DEF]_.
 .. [#label] A footnote on "label"
 
 .. [#DEF] The footnote for definition
+
+Admonition
+----------
+
+The `Admonition extension <https://python-markdown.github.io/extensions/admonition/>`_ adds `rST-style <http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions>`_ admonitions to Markdown.
+
+**Syntax**: ::
+
+    !!! type "optional explicit title within double quotes"
+        Any number of other indented markdown elements.
+
+        This is the second paragraph.
+
+If you don’t want a title, use a blank string "".
+
+The following types are supported:
+
+* attention
+* caution
+* danger
+* error
+* hint
+* important
+* note
+* tip
+* warning
+
+**Markup**: ::
+
+    !!! note
+    You should note that the title will be automatically capitalized.
+
+**Result**:
+
+.. note::
+   You should note that the title will be automatically capitalized.

@@ -122,8 +122,7 @@ review configuration options
 ----------------------------
 
 * review https://moin-20.readthedocs.io/en/latest/admin/configure.html
-* following the instructions in wikiconfig.py, create wikiconfig_local.py and wikiconfig_editme.py
-* configure options by editing wikiconfig_editme.py
+* configure options by editing wikiconfig.py
 
   * set superuser privileges on at least one username
   * the default configuration options are commonly used, it is likely new bugs can be
@@ -239,7 +238,7 @@ moin2 is a WSGI application and uses:
 * for stores: filesystem, sqlite3, sqlalchemy, memory
 * jquery javascript lib, a simple jQuery i18n plugin `Plugin <https://github.com/recurser/jquery-i18n>`_
 * CKeditor, the GUI editor for (x)html
-* TWikiDraw, AnyWikiDraw, svgdraw drawing tools
+* svgdraw as drawing tool
 
 How MoinMoin works
 ==================
@@ -470,16 +469,57 @@ Note the test starup will be rather slow, be patient.
 
 Documentation
 =============
-Sphinx (https://www.sphinx-doc.org) and reST markup are used for documenting
-moin. Documentation reST source code, example files and some other text files
-are located in the `docs/` directory in the source tree.
+Moin provides two types of documention. The Sphinx docs (https://www.sphinx-doc.org)
+are written in reST markup, and have a target audience of developers and wiki admins.
+The Help docs have a target audience of wiki editors and are written in markups supported by moin.
 
-Creating docs
--------------
+The Help docs are a minor subset of the Sphinx docs
+and may be available in several languages. The Sphinx docs are available only in English.
+
+Sphinx docs are available at https://moin-20.readthedocs.io/en/latest/ or
+may be created locally on Moin wiki's installed by developers.
+Documentation reST source code, example files and some other text files
+are located in the `moin/docs/` directory in the source tree.
+
+Creating local Sphinx docs
+--------------------------
 Sphinx can create all kinds of documentation formats. The most common are
 the local HTML docs that are linked to under the User tab. To generate local docs::
 
     ./m docs  # Windows: m docs
+
+Loading the Help docs
+---------------------
+Wiki admins must load the help docs to make them available to editors. Help docs are
+located in the `moin/src/moin/help/` directory in the source tree. Most themes
+will provide a link to the markup help above the edit textarea or the entire help namespace
+may be accessed through the User tab. Write permission to help files is granted by default.
+Wiki admins can change permissions via the ACL rules.
+
+To load the help docs::
+
+    moin load-help --namespace help-common  # images common to all languages
+    moin load-help --namespace help-en      # English text
+
+Multiple languages may be loaded. Current languages include::
+
+    en
+
+Updating the Help docs
+----------------------
+Developers may update the help files or add new files through the normal edit process.
+When editing is complete run one or more of::
+
+    moin maint-reduce-revisions  # updates all items in all namespaces
+    moin maint-reduce-revisions -q <item-name> -n help-en --test true # lists selected items, no updates
+    moin maint-reduce-revisions -q <item-name> -n help-en  # updates selected items
+
+Dump all the English help files to the version controlled directory::
+
+    moin dump-help -n help-en
+
+The above command may may be useful after updating one or more files. All of the files
+will be rewritten but only the changed files will be highlighted in version control.
 
 Moin Shell
 ==========
@@ -533,7 +573,7 @@ Create a new venv, install moin, create instance, start server, create item, mod
     moin run  # empty wiki
     moin load-sample  # data but no index
     moin index-build   # data with index
-    moin load-help -n en # load English help
-    moin load-help -n common # load help images
+    moin load-help -n help-en # load English help
+    moin load-help -n help-common # load help images
 
 Announce update on #moin, moin-devel@python.org.

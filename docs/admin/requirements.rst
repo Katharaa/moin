@@ -2,11 +2,11 @@
 Requirements
 ============
 
-MoinMoin requires Python 3.8+. A CPython distribution is
+MoinMoin requires Python 3.9+. A CPython distribution is
 recommended because it will likely be the fastest and most stable.
 Most developers use a CPython distribution for testing.
-Typical linux distributions will either have Python 3.8+ installed by
-default or will have a package manager that will install Python 3.8+
+Typical linux distributions will either have Python 3.9+ installed by
+default or will have a package manager that will install Python 3.9+
 as a secondary Python.
 Windows users may download CPython distributions from  https://www.python.org/ or
 https://www.activestate.com/.
@@ -43,11 +43,7 @@ moin2 installation process. For a list of dependencies, see setup.py.
 
 Clients
 =======
-On the client side, you need:
+On the client side, you need a web browser that supports W3C standards HTML 5, CSS 2.1, and JavaScript:
 
-* a web browser that supports W3C standards HTML 5, CSS 2.1, and JavaScript:
-
-  - any current version of Firefox, Chrome, Opera, Safari, Maxthon, Internet Explorer (IE9 or newer).
-  - use of older Internet Explorer versions is not recommended and not supported.
-
-* a Java browser plugin is required only if you want to use the TWikiDraw or AnyWikiDraw drawing applets.
+* any current version of Firefox, Chrome, Opera, Safari, Maxthon, Internet Explorer (IE9 or newer).
+* use of older Internet Explorer versions is not recommended and not supported.

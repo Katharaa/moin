@@ -93,8 +93,8 @@ If you want to load English help for editors (replace en with your wiki's prefer
 
 ::
 
- moin load-help -n en
- moin load-help -n common
+ moin load-help -n help-en
+ moin load-help -n help-common
 
 Run your wiki instance
 ======================
@@ -141,8 +141,8 @@ Before you can run moin, you need to install it.
 
 Using your standard user account, run the following command
 from the project root directory. Replace <python> in the command
-below with the path to a python 3.8+ executable. This is usually
-just "python", but may be "python3", "python3.8", "/opt/pypy/bin/pypy"
+below with the path to a python 3.9+ executable. This is usually
+just "python", but may be "python3", "python3.9", "/opt/pypy/bin/pypy"
 or even <some-other-path-to-python>:
 
 ::
@@ -223,8 +223,8 @@ If you want to load English help for editors (replace en with your wiki's prefer
 
 ::
 
- moin load-help -n en
- moin load-help -n common
+ moin load-help -n help-en
+ moin load-help -n help-common
 
 Next, run the built-in wiki server:
 
@@ -275,8 +275,11 @@ then you will likely want to keep your master branch up-to-date:
   git pull                 # if you cloned the moinwiki master repo OR
   git pull moinwiki master # if you cloned your fork and added a remote
 
-After pulling updates, it is best to also rerun the quickinstall process
-to install any changes or new releases of the dependent packages:
+Also check to see if there are changes to /src/moin/config/wikiconfig.py
+by comparing a diff to the wikiconfig.py in the wiki root.
+
+After pulling updates and updating wikiconfig.py, rerun the quickinstall
+process to install any new releases of dependent packages:
 
 ::
 

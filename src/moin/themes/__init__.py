@@ -1,6 +1,7 @@
 # Copyright: 2003-2010 MoinMoin:ThomasWaldmann
 # Copyright: 2008 MoinMoin:RadomirDopieralski
 # Copyright: 2010 MoinMoin:DiogenesAugusto
+# Copyright: 2023 MoinMoin project
 # License: GNU GPL v2 (or any later version), see LICENSE.txt for details.
 
 """
@@ -718,8 +719,6 @@ MIMETYPE_TO_CLASS = {
     'application/zip': 'package',
     'application/x-tar': 'package',
     'application/x-gtar': 'package',
-    'application/x-twikidraw': 'drawing',
-    'application/x-anywikidraw': 'drawing',
     'application/x-svgdraw': 'drawing',
 }
 
@@ -799,7 +798,7 @@ def setup_jinja_env():
         'storage': flaskg.storage,
         'clock': flaskg.clock,
         'cfg': app.cfg,
-        'item_name': '@NONAMEGIVEN',  # XXX can we just use '' ?
+        'item_name': request.view_args.get('item_name', ''),
         'url_for_item': url_for_item,
         'get_fqname': get_fqname,
         'get_editor_info': lambda meta: get_editor_info(meta),

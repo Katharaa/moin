@@ -54,6 +54,18 @@
                         <div class="col-md-6">
                             {{ basic_meta_editor(form['meta_form']) }}
                         </div>
+                        {% if item.meta['name'][0].endswith('Group') %}
+                            {{ forms.render(form['usergroup']) }}
+                            <div class="hint">
+                                {{ _('Enter list of user names, one name per line. No leading or trailing blanks, no blank lines.') }}
+                            </div>
+                        {% endif %}
+                        {% if item.meta['name'][0].endswith('Dict') %}
+                            {{ forms.render(form['wikidict']) }}
+                            <div class="hint">
+                                {{ _('Enter "key=value" strings, one per line, no quotes, no blank lines.') }}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -88,12 +100,24 @@
                 </div>
                 <div class="form-group">
                     {{ gen.input(type='submit', id='moin-save-text-button', value=form.submit_label, class='moin-button moin-modify-submit') }}
+                    {{ gen.input(type='submit', id='moin-preview-text-button', name='preview', value=form.preview_label,
+                        class='moin-button moin-modify-submit', onclick="$('#moin-modify').removeClass('moin-changed-input')",
+                        title=warning) }}
                     <button class="moin-button moin-cancel" type="button">{{ _("Cancel") }}</button>
                 </div>
             {% endif %}
 
         {{ gen.form.close() }}
     </div>
+
+    {% if preview_rendered %}
+        {# user clicked Preview button, show diff and modified item as draft #}
+        {{ utils.diff_table(preview_diffs) }}
+        <div class="moin-watermark" id="moin-content-data" >
+            {{ preview_rendered | safe }}
+        </div>
+    {% endif %}
+
 {% endblock %}
 
 {% block options_for_javascript %}

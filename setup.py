@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Copyright: 2001 by Juergen Hermann <jh@web.de>
 # Copyright: 2001-2018 MoinMoin:ThomasWaldmann
-# Copyright: 2023 MoinMoin project
+# Copyright: 2023-2024 MoinMoin:UlrichB
 # License: GNU GPL v2 (or any later version), see LICENSE.txt for details.
 
 import os
@@ -39,9 +39,10 @@ setup_args = dict(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Topic :: Internet :: WWW/HTTP :: WSGI",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
@@ -66,16 +67,17 @@ setup_args = dict(
     include_package_data=True,
     zip_safe=False,
     use_scm_version={
-        'write_to': os.path.join(basedir, 'src', 'moin', '_version.py'),
+        'write_to': os.path.join('src', 'moin', '_version.py'),
     },
     setup_requires=[
-        'setuptools_scm<8.0.0',  # magically cares for version and packaged files
+        'setuptools_scm',  # magically cares for version and packaged files
     ],
     install_requires=[
         'Babel>=2.10.0',  # internationalization support
         'blinker>=1.5',  # event signalling (e.g. for change notification trigger)
         'docutils>=0.18.1',  # reST markup processing
         'Markdown>=3.4.1',  # Markdown markup processing
+        'mdx_wikilink_plus>=1.4.1',  # Markdown Wikilinks extension
         'Flask<2.3.0',  # micro framework
         'Flask-Babel>=3.0.0',  # i18n support
         'Flask-Caching>=1.2.0',  # caching support
@@ -86,7 +88,7 @@ setup_args = dict(
         'Jinja2>=3.1.0',  # template engine
         'markupsafe<=2.2.0',  # safe html and xml
         'pygments>=1.4',  # src code / text file highlighting
-        'Werkzeug<2.4.0',  # wsgi toolkit
+        'Werkzeug',  # wsgi toolkit
         'whoosh>=2.7.0',  # needed for indexed search
         'pdfminer.six',  # pdf -> text/plain conversion
         'passlib>=1.6.0',  # strong password hashing (1.6 needed for consteq)
@@ -99,8 +101,6 @@ setup_args = dict(
         'XStatic-autosize',
         'XStatic-jQuery>=1.8.2',
         'XStatic-jQuery-File-Upload>=10.31.0',
-        'XStatic-TWikiDraw-moin>=2004.10.23.2',
-        'XStatic-AnyWikiDraw>=0.14.2',
         'XStatic-svg-edit-moin>=2012.11.15.1',
         'XStatic-JQuery.TableSorter>=2.14.5.1',
         'XStatic-Pygments>=1.6.0.1',

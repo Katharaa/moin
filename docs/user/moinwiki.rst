@@ -713,7 +713,7 @@ CSS classes for use with the wiki parser, tables, comments, and links
  - Background colors: red, green, blue, yellow, or orange
  - Borders: solid, dashed, or dotted
  - Text-alignment: left, center, right, or justify
- - Admonitions: caution, important, note, tip, warning
+ - Admonitions: attention, caution, danger, error, hint, important, note, tip, warning
  - Tables: moin-sortable, no-borders
  - Comments: comment
  - Position parsers and tables: float-left, float-right, inline, middle, clear-right, clear-left or clear-both
@@ -799,9 +799,9 @@ extra features. The following is a table of MoinMoin's macros.
 +-------------------------------------------+------------------------------------------------------------+
 | ``<<FootNote(Note here)>>``               | Inserts a footnote saying "Note here"                      |
 +-------------------------------------------+------------------------------------------------------------+
-| ``<<FontAwesome(name,color,size)>>``      | displays Font Awsome icon, color and size are optional     |
+| ``<<FontAwesome(name,color,size)>>``      | Displays Font Awsome icon, color and size are optional     |
 +-------------------------------------------+------------------------------------------------------------+
-| ``<<Icon(my-icon.png)>>``                 | displays icon from /static/img/icons                       |
+| ``<<Icon(my-icon.png)>>``                 | Displays icon from /static/img/icons                       |
 +-------------------------------------------+------------------------------------------------------------+
 | ``<<Include(ItemOne/SubItem)>>``          | Embeds the contents of ``ItemOne/SubItem`` inline          |
 +-------------------------------------------+------------------------------------------------------------+
@@ -818,9 +818,18 @@ extra features. The following is a table of MoinMoin's macros.
 +-------------------------------------------+------------------------------------------------------------+
 | ``<<RandomItem(3)>>``                     | Inserts names of 3 random items                            |
 +-------------------------------------------+------------------------------------------------------------+
-| ``<<ShowIcons()>>``                       | displays all icons in /static/img/icons directory          |
+| ``<<ShowIcons()>>``                       | Displays all icons in /static/img/icons directory          |
++-------------------------------------------+------------------------------------------------------------+
+| ``<<ShowSmileys()>>``                     | Displays available smileys and the corresponding markup    |
++-------------------------------------------+------------------------------------------------------------+
+| ``<<ShowUserGroup()>>``                   | Displays metadata defined in usergroup attribute           |
++-------------------------------------------+------------------------------------------------------------+
+| ``<<ShowWikiDict()>>``                    | Displays metadata defined in wikidict attribute            |
 +-------------------------------------------+------------------------------------------------------------+
 | ``<<TableOfContents(2)>>``                | Shows a table of contents up to level 2                    |
++-------------------------------------------+------------------------------------------------------------+
+| ``<<TitleIndex()>>``                      | Lists all itemnames for the namespace of the current item, |
+|                                           | grouped by initials                                        |
 +-------------------------------------------+------------------------------------------------------------+
 | ``<<Verbatim(`same` __text__)>>``         | Inserts text as entered, no markup rendering               |
 +-------------------------------------------+------------------------------------------------------------+

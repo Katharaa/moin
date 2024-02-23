@@ -3,24 +3,28 @@
   "address": "127.0.0.1",
   "comment": "",
   "contenttype": "text/x.moin.wiki;charset=utf-8",
-  "dataid": "a936f24328b44a42b0a8794cb5f897a6",
+  "dataid": "30cc072ac1e342c8970aa4cb49571b87",
   "externallinks": [],
-  "itemid": "db7a3f86accf4e40b0cbbcac03956722",
+  "itemid": "932eec2324c3494c9ac8b9dcb2e4635a",
   "itemlinks": [],
   "itemtransclusions": [],
   "itemtype": "default",
-  "mtime": 1682027158,
+  "mtime": 1704050058,
   "name": [
-    "moin/subitem"
+    "WikiDict"
   ],
   "name_old": [],
   "namespace": "help-en",
   "rev_number": 1,
-  "revid": "871962709eb14d469d7398f2fd418780",
-  "sha1": "0d3d85a642080954aa53659d7b87970c58a39487",
-  "size": 37,
+  "revid": "519deb6d2d7747d8979bde44c54d5ee6",
+  "sha1": "d9428a030ba7c34296ed9b8bd4174b91f38d5f06",
+  "size": 606,
   "summary": "",
   "tags": [],
-  "userid": "6c42d47cbee64f99ab6024b2a451a452",
+  "wikidict": {
+    "var1": "value1",
+    "var2": "value2",
+    "var3": "value3"
+  },
   "wikiname": "MyMoinMoin"
 }

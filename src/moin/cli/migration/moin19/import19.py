@@ -1,6 +1,6 @@
 # Copyright: 2008 MoinMoin:JohannesBerg
 # Copyright: 2008-2011 MoinMoin:ThomasWaldmann
-# Copyright: 2023 MoinMoin:UlrichB
+# Copyright: 2023-2024 MoinMoin:UlrichB
 # License: GNU GPL v2 (or any later version), see LICENSE.txt for details.
 
 """
@@ -32,10 +32,11 @@ from moin.app import create_app
 from moin.constants.keys import *  # noqa
 from moin.constants.contenttypes import CONTENTTYPE_USER, CHARSET19, CONTENTTYPE_MARKUP_OUT
 from moin.constants.itemtypes import ITEMTYPE_DEFAULT
-from moin.constants.namespaces import NAMESPACE_DEFAULT, NAMESPACE_USERPROFILES
+from moin.constants.namespaces import NAMESPACE_DEFAULT, NAMESPACE_USERPROFILES, NAMESPACE_USERS
+from moin.constants.rights import SPECIAL_USERS
 from moin.storage.error import NoSuchRevisionError
 from moin.utils.mimetype import MimeType
-from moin.utils.crypto import make_uuid, hash_hexdigest
+from moin.utils.crypto import generate_token, make_uuid, hash_hexdigest
 from moin import security
 from moin.converters.moinwiki19_in import ConverterFormat19
 from moin.converters import default_registry
@@ -76,7 +77,9 @@ FORMAT_TO_CONTENTTYPE = {
     'text/csv': 'text/csv;charset=utf-8',
     'docbook': 'application/docbook+xml;charset=utf-8',
 }
-MIGR_STAT_KEYS = ['revs', 'items', 'users', 'missing_user', 'missing_file', 'del_item']
+MIGR_STAT_KEYS = ['revs', 'items', 'attachments', 'users', 'missing_user', 'missing_file', 'del_item']
+
+special_users_lower = [user.lower() for user in SPECIAL_USERS]
 
 last_moin19_rev = {}
 user_names = []
@@ -102,15 +105,19 @@ def migr_logging(msg_id, log_msg):
         logging.debug(log_msg)
 
 
-def migr_statistics():
+def migr_statistics(unknown_macros):
     logging.info("Migration statistics:")
-    logging.info("Users     : {0:6d}".format(migr_stat['users']))
-    logging.info("Items     : {0:6d}".format(migr_stat['items']))
-    logging.info("Revisions : {0:6d}".format(migr_stat['revs']))
+    logging.info("Users:       {0:6d}".format(migr_stat['users']))
+    logging.info("Items:       {0:6d}".format(migr_stat['items']))
+    logging.info("Revisions:   {0:6d}".format(migr_stat['revs']))
+    logging.info("Attachments: {0:6d}".format(migr_stat['attachments']))
 
     for message in ['missing_user', 'missing_file', 'del_item']:
         if migr_stat[message] > 0:
-            logging.info("Warnings  : {0:6d} - {1}".format(migr_stat[message], message))
+            logging.info("Warnings:    {0:6d} - {1}".format(migr_stat[message], message))
+
+    if len(unknown_macros) > 0:
+        logging.info("Warnings:    {0:6d} - unknown macros {1}".format(len(unknown_macros), str(unknown_macros)[1:-1]))
 
 
 @cli.command('import19', help='Import content and user data from a moin 1.9 wiki')
@@ -118,9 +125,12 @@ def migr_statistics():
               help='moin 1.9 data_dir (contains pages and users subdirectories).')
 @click.option('--markup_out', '-m', type=click.Choice(CONTENTTYPE_MARKUP_OUT.keys()),
               required=False, default='moinwiki', help='target markup.')
-def ImportMoin19(data_dir=None, markup_out=None):
+@click.option('--namespace', '-n', type=str, required=False, default=NAMESPACE_DEFAULT,
+              help='target namespace, e.g. used for members of a wikifarm.')
+def ImportMoin19(data_dir=None, markup_out=None, namespace=None):
     '''  Import content and user data from a moin wiki with version 1.9 '''
 
+    target_namespace = namespace
     flaskg.add_lineno_attr = False
     flaskg.item_name2id = {}
     userid_old2new = {}
@@ -135,16 +145,17 @@ def ImportMoin19(data_dir=None, markup_out=None):
     if os.path.isdir(user_dir):
         for rev in UserBackend(user_dir):
             global user_names
-            user_names.append(rev.meta['name'][0])
-            userid_old2new[rev.uid] = rev.meta['itemid']  # map old userid to new userid
+            user_names.append(rev.meta[NAME][0])
+            userid_old2new[rev.uid] = rev.meta[ITEMID]  # map old userid to new userid
             backend.store(rev.meta, rev.data)
 
     logging.info("PHASE2: Converting Pages and Attachments ...")
-    for rev in PageBackend(data_dir, deleted_mode=DELETED_MODE_KILL, default_markup='wiki'):
+    for rev in PageBackend(data_dir, deleted_mode=DELETED_MODE_KILL,
+                           default_markup='wiki', target_namespace=target_namespace):
         for user_name in user_names:
-            if rev.meta['name'][0] == user_name or rev.meta['name'][0].startswith(user_name + '/'):
-                rev.meta['namespace'] = 'users'
-                users_itemlist.add(rev.meta['name'][0])  # save itemname for link migration
+            if rev.meta[NAME][0] == user_name or rev.meta[NAME][0].startswith(user_name + '/'):
+                rev.meta[NAMESPACE] = 'users'
+                users_itemlist.add(rev.meta[NAME][0])  # save itemname for link migration
                 break
 
         if USERID in rev.meta:
@@ -156,9 +167,10 @@ def ImportMoin19(data_dir=None, markup_out=None):
                              'Missing userid {0!r}, editor of {1} revision {2}'.format(
                                  rev.meta[USERID], rev.meta[NAME][0], rev.meta[REVID]))
                 del rev.meta[USERID]
+        migr_stat['revs'] += 1
         backend.store(rev.meta, rev.data)
         # item_name to itemid xref required for migrating user subscriptions
-        flaskg.item_name2id[rev.meta['name'][0]] = rev.meta['itemid']
+        flaskg.item_name2id[rev.meta[NAME][0]] = rev.meta[ITEMID]
 
     logging.info("PHASE3: Converting last revision of Moin 1.9 items to Moin 2.0 markup ...")
     conv_in = ConverterFormat19()
@@ -172,7 +184,6 @@ def ImportMoin19(data_dir=None, markup_out=None):
         except UnicodeEncodeError:
             logging.debug('Processing item "{0}", namespace "{1}", revision "{2}"'.format(
                 item_name.encode('ascii', errors='replace'), namespace, revno))
-        migr_stat['revs'] += 1
         if namespace == '':
             namespace = 'default'
         meta, data = backend.retrieve(namespace, revno)
@@ -183,21 +194,27 @@ def ImportMoin19(data_dir=None, markup_out=None):
         dom.set(moin_page.page_href, str(iri))
         refs_conv(dom)
 
-        # migrate itemlinks to users namespace
+        # migrate itemlinks to users namespace or new target namespace
+        # links to items with the name of a custom namespace and their subitems are kept untouched
         itemlinks_19 = refs_conv.get_links()
-        itemlinks2chg = []
+        user_itemlinks2chg = []
+        namespace_itemlinks2chg = []
         for link in itemlinks_19:
-            if link in users_itemlist:
-                itemlinks2chg.append(link)
-        if len(itemlinks2chg) > 0:
-            migrate_users_links(dom, itemlinks2chg)
+            if link in users_itemlist or link.split('/')[0] in users_itemlist:
+                user_itemlinks2chg.append(link)
+            elif link not in custom_namespaces and link.split('/')[0] not in custom_namespaces:
+                namespace_itemlinks2chg.append(link)
+        if len(user_itemlinks2chg) > 0:
+            migrate_itemlinks(dom,  NAMESPACE_USERS, user_itemlinks2chg)
+        if len(namespace_itemlinks2chg) > 0:
+            migrate_itemlinks(dom, target_namespace, namespace_itemlinks2chg)
 
         # migrate macros that need update from 1.9 to 2.0
         migrate_macros(dom)  # in-place conversion
 
         out = conv_out(dom)
         out = out.encode(CHARSET19)
-        if len(itemlinks2chg) > 0:
+        if len(user_itemlinks2chg) > 0 or len(namespace_itemlinks2chg):
             refs_conv(dom)  # refresh changed itemlinks
         meta[ITEMLINKS] = refs_conv.get_links()
         meta[ITEMTRANSCLUSIONS] = refs_conv.get_transclusions()
@@ -212,8 +229,14 @@ def ImportMoin19(data_dir=None, markup_out=None):
         # bumping modified time makes global and item history views more useful
         meta[MTIME] = meta[MTIME] + 1
         meta[COMMENT] = 'Converted moin 1.9 markup to ' + markup_out + ' markup'
+        if meta[NAME][0].endswith('Group') and meta[USERGROUP]:
+            msg = 'Moin1.x user list moved to User Group metadata; item content ignored. Use ShowUserGroup macro. '
+            meta[COMMENT] = msg + meta[COMMENT]
+        if meta[NAME][0].endswith('Dict') and meta[WIKIDICT]:
+            msg = 'Moin1.x Wiki Dict data moved to Wiki Dict metadata; item content ignored. Use ShowWikiDict macro. '
+            meta[COMMENT] = msg + meta[COMMENT]
         meta[CONTENTTYPE] = CONTENTTYPE_MARKUP_OUT[markup_out]
-        del meta['dataid']
+        del meta[DATAID]
         out.seek(0)
         backend.store(meta, out)
 
@@ -229,7 +252,10 @@ def ImportMoin19(data_dir=None, markup_out=None):
     indexer.open()
 
     logging.info("Finished conversion!")
-    migr_statistics()
+    if hasattr(conv_out, 'unknown_macro_list'):
+        migr_statistics(unknown_macros=conv_out.unknown_macro_list)
+    else:
+        migr_statistics([])
 
 
 class KillRequested(Exception):
@@ -242,6 +268,7 @@ class PageBackend:
     """
     def __init__(self, path, deleted_mode=DELETED_MODE_KEEP,
                  default_markup='wiki',
+                 target_namespace='',
                  item_category_regex=r'(?P<all>Category(?P<key>(?!Template)\S+))'):
         """
         :param path: storage path (data_dir)
@@ -255,11 +282,13 @@ class PageBackend:
                                       keep their attachments. (default)
         :param default_markup: used if a page has no #format line, moin 1.9's default
                                'wiki' and we also use this default here.
+        :param target_namespace : target namespace
         """
         self._path = path
         assert deleted_mode in (DELETED_MODE_KILL, DELETED_MODE_KEEP, )
         self.deleted_mode = deleted_mode
         self.format_default = default_markup
+        self.target_namespace = target_namespace
         self.item_category_regex = re.compile(item_category_regex, re.UNICODE)
 
     def __iter__(self):
@@ -269,7 +298,7 @@ class PageBackend:
         for f in pages:
             itemname = unquoteWikiname(f)
             try:
-                item = PageItem(self, os.path.join(pages_dir, f), itemname)
+                item = PageItem(self, os.path.join(pages_dir, f), itemname, self.target_namespace)
             except KillRequested:
                 pass  # a message was already output
             except (IOError, AttributeError):
@@ -291,11 +320,13 @@ class PageItem:
     """
     moin 1.9 page
     """
-    def __init__(self, backend, path, itemname):
+    def __init__(self, backend, path, itemname, target_namespace):
         self.backend = backend
         self.name = itemname
         self.path = path
+        self.target_namespace = target_namespace
         try:
+
             logging.debug("Processing item {0}".format(itemname))
         except UnicodeEncodeError:
             logging.debug("Processing item {0}".format(itemname.encode('ascii', errors='replace')))
@@ -327,7 +358,7 @@ class PageItem:
         for fname in fnames:
             try:
                 revno = int(fname)
-                page_rev = PageRevision(self, revno, os.path.join(revisionspath, fname))
+                page_rev = PageRevision(self, revno, os.path.join(revisionspath, fname), self.target_namespace)
                 if parent_id:
                     page_rev.meta[PARENTID] = parent_id
                 parent_id = page_rev.meta[REVID]
@@ -357,7 +388,7 @@ class PageRevision:
     """
     moin 1.9 page revision
     """
-    def __init__(self, item, revno, path):
+    def __init__(self, item, revno, path, target_namespace):
         item_name = item.name
         itemid = item.itemid
         editlog = item.editlog
@@ -376,7 +407,7 @@ class PageRevision:
                     }
             try:
                 revpath = os.path.join(item.path, 'revisions', '{0:08d}'.format(revno - 1))
-                previous_meta = PageRevision(item, revno - 1, revpath).meta
+                previous_meta = PageRevision(item, revno - 1, revpath, target_namespace).meta
                 # if this page revision is deleted, we have no on-page metadata.
                 # but some metadata is required, thus we have to copy it from the
                 # (non-deleted) revision revno-1:
@@ -425,30 +456,35 @@ class PageRevision:
         meta[ITEMID] = itemid
         meta[REVID] = make_uuid()
         meta[REV_NUMBER] = revno
-        meta[NAMESPACE] = NAMESPACE_DEFAULT
+        meta[NAMESPACE] = target_namespace
         meta[ITEMTYPE] = ITEMTYPE_DEFAULT
         if meta[NAME][0].endswith('Template'):
             if TAGS in meta:
                 meta[TAGS].append(TEMPLATE)
             else:
                 meta[TAGS] = [TEMPLATE]
+        if meta[NAME][0].endswith('Group'):
+            meta[USERGROUP] = self._parse_acl_list(content)
+        if meta[NAME][0].endswith('Dict'):
+            meta[WIKIDICT] = self._parse_wikidict(content)
+
         # if this revision matches a custom namespace defined in wikiconfig,
         # then modify the meta data for namespace and name
         for custom_namespace in custom_namespaces:
-            if meta['name'][0] == custom_namespace:
+            if meta[NAME][0] == custom_namespace:
                 # cannot have itemname == namespace_name, so we rename. XXX may create an item with duplicate name
-                new_name = app.cfg.root_mapping.get(meta['name'][0], app.cfg.default_root)
+                new_name = app.cfg.root_mapping.get(meta[NAME][0], app.cfg.default_root)
                 logging.warning("Converting {0} to namespace:homepage {1}:{2}".format(
-                    meta['name'][0], custom_namespace, new_name))
-                meta['namespace'] = custom_namespace
-                meta['name'] = [new_name]
+                    meta[NAME][0], custom_namespace, new_name))
+                meta[NAMESPACE] = custom_namespace
+                meta[NAME] = [new_name]
                 break
-            if meta['name'][0].startswith(custom_namespace + '/'):
+            if meta[NAME][0].startswith(custom_namespace + '/'):
                 # split the namespace from the name
                 logging.warning("Converting {0} to namespace:itemname {1}:{2}".format(
-                    meta['name'][0], custom_namespace, meta['name'][0][len(custom_namespace) + 1:]))
-                meta['namespace'] = custom_namespace
-                meta['name'] = [meta['name'][0][len(custom_namespace) + 1:]]
+                    meta[NAME][0], custom_namespace, meta[NAME][0][len(custom_namespace) + 1:]))
+                meta[NAMESPACE] = custom_namespace
+                meta[NAME] = [meta[NAME][0][len(custom_namespace) + 1:]]
                 break
         self.meta = {}
         for k, v in meta.items():
@@ -462,8 +498,8 @@ class PageRevision:
             self.meta[ACL] = regenerate_acl(acl_line)
 
         for user_name in user_names:
-            if meta['name'][0] == user_name or meta['name'][0].startswith(user_name + '/'):
-                meta['namespace'] = 'users'
+            if meta[NAME][0] == user_name or meta[NAME][0].startswith(user_name + '/'):
+                meta[NAMESPACE] = 'users'
                 break
 
         # match item create process that adds some keys with none-like values
@@ -475,7 +511,7 @@ class PageRevision:
         for k in (COMMENT, SUMMARY):
             if k not in self.meta:
                 self.meta[k] = ''
-        self.meta['wikiname'] = app.cfg.sitename  # old 1.9 sitename is not available
+        self.meta[WIKINAME] = app.cfg.sitename  # old 1.9 sitename is not available
         global last_moin19_rev
         if meta[CONTENTTYPE] == CONTENTTYPE_MOINWIKI:
             last_moin19_rev[item_name] = (meta[REVID], meta[NAMESPACE])
@@ -489,11 +525,54 @@ class PageRevision:
             data = process_categories(meta, data, self.backend.item_category_regex)
         return data
 
+    def _parse_acl_list(self, content):
+        """
+        Return ACL list extracted from item's content
+        """
+        ret = []
+        first_user = True
+        start = 'not a hit yet'
+        lines = content.splitlines()
+        for line in lines:
+            if first_user:
+                parts = line.split('*')
+                if len(parts) == 2 and parts[1].startswith(' '):
+                    # only select lines with consistent indentation
+                    start = parts[0] + '* '
+                    first_user = False
+            if line.startswith(start):
+                parts = line.split('*')
+                if len(parts) == 2 and parts[1].startswith(' '):
+                    username = parts[1].strip()
+                    # link conversion may have enclosed all links with [[...]], maybe a leading +/-: "+[[UserName]]"
+                    if username.startswith('[[') and username.endswith(']]'):
+                        ret.append(username[2:-2])
+                    elif username.startswith('+[[') or username.startswith('-[[') and username.endswith(']]'):
+                        username.replace('[', '')
+                        ret.append(username[:-2])
+                    else:
+                        ret.append(username)
+        return ret
 
-def migrate_users_links(dom, itemlinks2chg):
+    def _parse_wikidict(self, content):
+        """
+        Return a dict of key, value pairs: {key: val,...}
+        """
+        ret = {}
+        lines = content.splitlines()
+        for line in lines:
+            line = line.strip()
+            parts = line.split(':: ')
+            if len(parts) == 2:
+                ret[parts[0]] = parts[1]
+        return ret
+
+
+def migrate_itemlinks(dom, namespace, itemlinks2chg):
     """ Walk the DOM tree and change itemlinks to users namespace
 
     :param dom: the tree to check for elements to migrate
+    :param namespace: target namespace
     :param itemlinks2chg: list of itemlinks to be changed
     :type dom: emeraldtree.tree.Element
     """
@@ -503,8 +582,8 @@ def migrate_users_links(dom, itemlinks2chg):
         if node.tag.name == 'a' and not isinstance(node.attrib[xlink.href], str):
             path_19 = str(node.attrib[xlink.href].path)
             if node.attrib[xlink.href].scheme == 'wiki.local' and path_19 in itemlinks2chg:
-                logging.debug("Changing link from " + path_19 + " to users/" + path_19)
-                node.attrib[xlink.href].path = 'users/' + path_19
+                logging.debug("Changing link from {} to {}/{}".format(path_19, namespace, path_19))
+                node.attrib[xlink.href].path = '{}/{}'.format(namespace, path_19)
 
 
 def process_categories(meta, data, item_category_regex):
@@ -549,7 +628,9 @@ class AttachmentRevision:
                 MTIME: int(os.path.getmtime(attpath)),
                 ACTION: ACTION_SAVE,
             }
+        migr_stat['attachments'] += 1
         meta[NAME] = ['{0}/{1}'.format(item_name, attach_name)]
+        logging.debug('Migrating attachment {0}'.format(meta[NAME]))
         if acl is not None:
             meta[ACL] = acl
         meta[CONTENTTYPE] = str(MimeType(filename=attach_name).content_type())
@@ -649,9 +730,15 @@ def regenerate_acl(acl_string, acl_rights_valid=ACL_RIGHTS_CONTENTS):
         if (entries, rights) == (['Default'], []):
             result.append("Default")
         else:
+            entries_valid = []
+            for entry in entries:
+                if entry.lower() in special_users_lower and entry != entry.capitalize():
+                    entries_valid.append(entry.capitalize())
+                else:
+                    entries_valid.append(entry)
             result.append("{0}{1}:{2}".format(
                           modifier,
-                          ','.join(entries),
+                          ','.join(entries_valid),
                           ','.join(rights)  # iterator has removed invalid rights
                           ))
     result = ' '.join(result)
@@ -752,7 +839,7 @@ class UserRevision:
 
         # rename aliasname to display_name:
         metadata[DISPLAY_NAME] = metadata.get('aliasname')
-        logging.debug("Processing user {0} {1} {2}".format(metadata['name'][0], self.uid, metadata['email']))
+        logging.debug("Processing user {0} {1} {2}".format(metadata[NAME][0], self.uid, metadata[EMAIL]))
         migr_stat['users'] += 1
 
         # transfer subscribed_pages to subscription_patterns
@@ -760,7 +847,7 @@ class UserRevision:
 
         # convert bookmarks from usecs (and str) to secs (int)
         metadata[BOOKMARKS] = [(interwiki, int(bookmark) // 1000000)
-                               for interwiki, bookmark in metadata.get('bookmarks', {}).items()]
+                               for interwiki, bookmark in metadata.get(BOOKMARKS, {}).items()]
 
         # stuff we want to get rid of:
         kill = ['aliasname',  # renamed to display_name
@@ -813,6 +900,11 @@ class UserRevision:
                 # drop old, unsupported (and also more or less unsafe) hashing scheme
                 del metadata[ENC_PASSWORD]
 
+        if SESSION_TOKEN not in metadata:
+            key, token = generate_token()
+            metadata[SESSION_TOKEN] = token
+            metadata[SESSION_KEY] = key
+
         # TODO quicklinks and subscribed_items - check for non-interwiki elements and convert them to interwiki
 
         return metadata
@@ -836,7 +928,10 @@ class UserRevision:
                 if ":" in subscribed_item:
                     wikiname, subscribed_item = subscribed_item.split(":", 1)
 
-                if (subscribed_item.endswith(".*") and len(subscribed_item) > 2
+                if not any(x in subscribed_item for x in RECHARS):
+                    subscriptions.append("{0}:{1}:{2}".format(NAME, wikiname, subscribed_item))
+                elif (subscribed_item.endswith(".*") and len(subscribed_item) > 2
+                        and not subscribed_item.endswith("/.*")
                         and not any(x in subscribed_item[:-2] for x in RECHARS)):
                     subscriptions.append("{0}:{1}:{2}".format(NAMEPREFIX, wikiname, subscribed_item[:-2]))
                 else:
