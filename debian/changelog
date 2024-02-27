@@ -1,8 +1,9 @@
-moin (2.0+git20240224.4db4918f-1) UNRELEASED; urgency=medium
+moin (2.0+git20240224.4db4918f-1+nmu1) unstable; urgency=medium
 
+  * Non-maintainer upload.
   * New upstream release. 
 
- -- Kathara Sasikumar <katharasasikumar007@gmail.com.>  Fri, 23 Feb 2024 19:41:04 +0000
+ -- Kathara Sasikumar <katharasasikumar007@gmail.com>  Fri, 23 Feb 2024 19:41:04 +0000
 
 moin (2.0+git20230922.bb783d4c-1) unstable; urgency=medium
 

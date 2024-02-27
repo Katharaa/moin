@@ -8,8 +8,7 @@ Copyright: 2000-2006 by Juergen Hermann <jh@web.de>
                      http://moinmo.in/MoinCoreTeamGroup
 License: GPL-2+
 
-Files: src/moin/static/js/jquery.i18n.js
-       src/moin/static/js/jquery.i18n.min.js
+Files: src/moin/static/js/jquery.i18n.min.js
 Copyright: 2010-2017 Dave Perrett
 License: Expat
 
