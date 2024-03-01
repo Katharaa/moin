@@ -1,7 +1,7 @@
-moin (2.0+git20240224.4db4918f-1+nmu1) unstable; urgency=medium
+moin (2.0+git20240224.4db4918f-1) UNRELEASED; urgency=medium
 
-  * Non-maintainer upload.
   * New upstream release. 
+  * Refreshed patches against new upstream release.
 
  -- Kathara Sasikumar <katharasasikumar007@gmail.com>  Fri, 23 Feb 2024 19:41:04 +0000
 
