@@ -6,11 +6,11 @@ Subject: Install the help data.
  setup.py | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/setup.py b/setup.py
-index 9b9cc24..29dfaaa 100644
---- a/setup.py
-+++ b/setup.py
-@@ -71,6 +71,7 @@ setup_args = dict(
+Index: moin/setup.py
+===================================================================
+--- moin.orig/setup.py
++++ moin/setup.py
+@@ -72,6 +72,7 @@ setup_args = dict(
          'moin.apps.admin': find_files('src/moin/apps/admin', ['templates']),
          'moin.apps.misc': find_files('src/moin/apps/misc', ['templates']),
          'moin.contrib': ['*.txt', ],

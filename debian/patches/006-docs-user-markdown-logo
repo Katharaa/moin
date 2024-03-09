@@ -14,11 +14,11 @@ moin (2.0+git20230330.c55318e3-1) unstable; urgency=medium
  docs/user/markdown.rst | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/docs/user/markdown.rst b/docs/user/markdown.rst
-index a43a676..dab51a4 100644
---- a/docs/user/markdown.rst
-+++ b/docs/user/markdown.rst
-@@ -424,7 +424,7 @@ do not appear in the rendered HTML:
+Index: moin/docs/user/markdown.rst
+===================================================================
+--- moin.orig/docs/user/markdown.rst
++++ moin/docs/user/markdown.rst
+@@ -440,7 +440,7 @@ do not appear in the rendered HTML:
  
  To transclude image from remote site:
  
